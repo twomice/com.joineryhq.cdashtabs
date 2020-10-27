@@ -1,0 +1,10 @@
+.cdashtabs button {
+  padding: 10px;
+  cursor: pointer;
+  margin: 5px;
+  border: 1px solid #000;
+}
+
+.cdashtabs button.is-active {
+  background-color: #fff;
+}
