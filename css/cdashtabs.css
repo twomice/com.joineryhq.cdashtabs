@@ -1,3 +1,7 @@
+table.dashboard-elements > tbody > tr {
+  display: none;
+}
+
 .cdashtabs button {
   padding: 10px;
   cursor: pointer;
