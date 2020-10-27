@@ -6,6 +6,61 @@ use CRM_Cdashtabs_ExtensionUtil as E;
 // phpcs:enable
 
 /**
+ * Implements hook_civicrm_buildForm().
+ *
+ * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_buildForm
+ */
+function cdashtabs_civicrm_buildForm($formName, &$form) {
+  // By default, don't add cdashtabs field.
+  $isCdash = FALSE;
+  
+  // For the Profile edit settings form, add our custom configuration field.
+  if ($formName == 'CRM_UF_Form_Group') {
+    // Create new field.
+    $form->addElement('checkbox', 'is_cdash', E::ts('Display on Contact Dashboard?'));
+
+    // Assign bhfe fields to the template, so our new field has a place to live.
+    $tpl = CRM_Core_Smarty::singleton();
+    $bhfe = $tpl->get_template_vars('beginHookFormElements');
+    if (!$bhfe) {
+      $bhfe = array();
+    }
+    $bhfe[] = 'is_cdash';
+    $form->assign('beginHookFormElements', $bhfe);
+
+    // Add javascript that will relocate our field to a sensible place in the form.
+    CRM_Core_Resources::singleton()->addScriptFile('com.joineryhq.cdashtabs', 'js/CRM_UF_Form_Group.js');
+
+    // Set defaults so our field has the right value.
+    $gid = $form->getVar('_id');
+    if ($gid) {
+      $settings = CRM_Cdashtabs_Settings::getUFGroupSettings($gid);
+      $defaults = array(
+        'is_cdash' => $settings['is_cdash'],
+      );
+      $form->setDefaults($defaults);
+    }
+  }
+
+}
+
+/**
+ * Implements hook_civicrm_postProcess().
+ *
+ * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_postProcess
+ */
+function cdashtabs_civicrm_postProcess($formName, &$form) {
+  if ($formName == 'CRM_UF_Form_Group') {
+    $gid = $form->getVar('_id');
+    // Get existing settings and add in our is_cdash value. (Because
+    // saveAllUFGRoupSettings() assumes we're passing all setting values.
+    $settings = CRM_Cdashtabs_Settings::getUFGroupSettings($gid);
+    $settings['is_cdash'] = $form->_submitValues['is_cdash'];
+    CRM_Cdashtabs_Settings::saveAllUFGRoupSettings($gid, $settings);
+  }
+}
+
+/**
  * Implements hook_civicrm_config().
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_config/
