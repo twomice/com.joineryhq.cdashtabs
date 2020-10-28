@@ -70,7 +70,8 @@ class CRM_Cdashtabs_Settings {
       $optionSettingJson = $optionValue['value'] ?? '{}';
       $optionSettings = json_decode($optionSettingJson, TRUE);
       if (
-        $isCdash === NULL || ($optionSettings['is_cdash'] ?? 0) == intval($isCdash)
+        $optionSettings['uf_group_id']
+        && ($isCdash === NULL || ($optionSettings['is_cdash'] ?? 0) == intval($isCdash))
       ) {
         $filteredSettings[] = $optionSettings;
       }
