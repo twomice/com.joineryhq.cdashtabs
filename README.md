@@ -1,15 +1,30 @@
-# Contact Dashboard Tabs
+# CiviCRM: Contact Dashboard Tabs
 
 ![Screenshot](/images/screenshot.png)
 
-(*FIXME: In one or two paragraphs, describe what the extension does and why one would download it. *)
+Divides the Contact Dashboard into tabs for ease of use. Also allows display of 
+profiles as read-only tabs in the Contact Dashboard.
 
 The extension is licensed under [GPL-3.0](LICENSE.txt).
+
+## Usage
+
+1. Simply enable this extension to cause the sections in the Contact Dashboard
+to display as tabs.
+2. Optionally, check the "Display on Contact Dashboard?" checkbox on any Profile
+to have that Profile also display (as a tab) on the Contact Dashboard.
+
+## Caveats
+
+When displaying a Profile on the Contact Dashboard, you should ensure that the 
+Profile contains only contact-related fields. For example, contribution-related
+fields make no sense in the context of the Contact Dashboard, as there's no specific
+contribution being addressed.
 
 ## Requirements
 
 * PHP v7.0+
-* CiviCRM (*FIXME: Version number*)
+* CiviCRM 5.0
 
 ## Installation (Web UI)
 
@@ -22,7 +37,7 @@ install it with the command-line tool [cv](https://github.com/civicrm/cv).
 
 ```bash
 cd <extension-dir>
-cv dl com.joineryhq.cdashtabs@https://github.com/FIXME/com.joineryhq.cdashtabs/archive/master.zip
+cv dl com.joineryhq.cdashtabs@https://github.com/twomice/com.joineryhq.cdashtabs/archive/master.zip
 ```
 
 ## Installation (CLI, Git)
@@ -31,13 +46,9 @@ Sysadmins and developers may clone the [Git](https://en.wikipedia.org/wiki/Git) 
 install it with the command-line tool [cv](https://github.com/civicrm/cv).
 
 ```bash
-git clone https://github.com/FIXME/com.joineryhq.cdashtabs.git
+git clone https://github.com/twomice/com.joineryhq.cdashtabs.git
 cv en cdashtabs
 ```
-
-## Usage
-
-(* FIXME: Where would a new user navigate to get started? What changes would they see? *)
 
 ## Support
 ![screenshot](/images/joinery-logo.png)
