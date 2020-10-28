@@ -248,31 +248,40 @@ function cdashtabs_civicrm_pageRun(&$page) {
 function cdashtabs_civicrm_alterContent(&$content, $context, $tplName, &$object) {
   if ($context == 'page') {
     if ($tplName == 'CRM/Contact/Page/View/UserDashBoard.tpl') {
+      // Get a list of settings-per-uf-group where is_cdash = TRUE.
+      $cdashProfileSettings = CRM_Cdashtabs_Settings::getFilteredUFGroupSettings(TRUE);
+      if (!empty($cdashProfileSettings)) {
+        // We need the current contact ID to display the profiles properly.
+        $userContactId = CRM_Core_Session::singleton()->getLoggedInContactID();
+        if (!$userContactId) {
+          // If there's no know contact id, we can't display profiles, so return.
+          return;
+        }
+      }
+      // For each of those settings-groups, process the given uf-group for display.
+      foreach ($cdashProfileSettings as $cdashProfileSetting) {
+        $ufId = $cdashProfileSetting['uf_group_id'];
+        $ufGroup = \Civi\Api4\UFGroup::get()
+          ->addWhere('id', '=', $ufId)
+          ->execute()
+          ->first();
 
-      // Hard-code uf-group-id = 1, for now. FIXME: We'll change this later.
-      $id = 1;
-      $ufGroup = \Civi\Api4\UFGroup::get()
-        ->addWhere('id', '=', 1)
-        ->execute()
-        ->first();
+        $page = new CRM_Profile_Page_Dynamic($userContactId, $ufId, NULL, TRUE);
+        $profileContent = $page->run();
 
-      $userID = CRM_Core_Session::singleton()->getLoggedInContactID();
-      $page = new CRM_Profile_Page_Dynamic($userID, $id, NULL, TRUE);
-      $profileContent .= $page->run();
-
-      $cdashContent = '<div class="cdash-inject" style="display: none;">';
-      $uFGroupClass = strtolower(str_replace(' ', '-', $ufGroup['title']));
-      $cdashContent .= "<div id='crm-container' class='crm-container cdash-inject-list'>";
-      $cdashContent .= "<table><tbody><tr class='crm-dashboard-{$uFGroupClass}'><td>";
-      $cdashContent .= "<div class='header-dark'>{$ufGroup['title']}</div>";
-      $cdashContent .= "<div class='view-content'>";
-      $cdashContent .= "<div class='crm-profile-name-{$uFGroupClass}'>{$profileContent}";
-      $cdashContent .= "</div></div>";
-      $cdashContent .= "</td></tr></tbody></table>";
-      $cdashContent .= "</div>";
+        $cdashContent = '<div class="cdash-inject" style="display: none;">';
+        $uFGroupClass = strtolower(str_replace(' ', '-', $ufGroup['title']));
+        $cdashContent .= "<div id='crm-container' class='crm-container cdash-inject-list'>";
+        $cdashContent .= "<table><tbody><tr class='crm-dashboard-{$uFGroupClass}'><td>";
+        $cdashContent .= "<div class='header-dark'>{$ufGroup['title']}</div>";
+        $cdashContent .= "<div class='view-content'>";
+        $cdashContent .= "<div class='crm-profile-name-{$uFGroupClass}'>{$profileContent}";
+        $cdashContent .= "</div></div>";
+        $cdashContent .= "</td></tr></tbody></table>";
+        $cdashContent .= "</div>";
+        $cdashContent .= "</div>";
+        $content .= $cdashContent;
+      }
     }
   }
-
-  $cdashContent .= "</div>";
-  $content .= $cdashContent;
 }

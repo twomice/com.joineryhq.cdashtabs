@@ -51,4 +51,31 @@ class CRM_Cdashtabs_Settings {
       return FALSE;
     }
   }
+
+  /**
+   * Get an array of saved settings-per-uf-group, filtered per the given criteria.
+   *
+   * @param Boolean $isCdash If given, filter only for settings-per-uf-group where
+   *    the setting value is_cdash matches the given value.
+   *
+   */
+  public static function getFilteredUFGroupSettings($isCdash = NULL) {
+    $filteredSettings = [];
+    $optionGroup = \Civi\Api4\OptionGroup::get()
+      ->addWhere('name', '=', 'cdashtabs')
+      ->addChain('get_optionValue', \Civi\Api4\OptionValue::get()->addWhere('option_group_id', '=', '$id'))
+      ->execute()
+      ->first();
+    foreach ($optionGroup['get_optionValue'] as $optionValue) {
+      $optionSettingJson = $optionValue['value'] ?? '{}';
+      $optionSettings = json_decode($optionSettingJson, TRUE);
+      if (
+        $isCdash === NULL || ($optionSettings['is_cdash'] ?? 0) == intval($isCdash)
+      ) {
+        $filteredSettings[] = $optionSettings;
+      }
+    }
+    return $filteredSettings;
+  }
+
 }
