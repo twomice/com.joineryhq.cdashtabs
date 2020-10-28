@@ -258,6 +258,11 @@ function cdashtabs_civicrm_alterContent(&$content, $context, $tplName, &$object)
           return;
         }
       }
+      // Calls to profile page->run() below will change the page title, and
+      // there's not much we can do about that. Store the current page title
+      // here so we can change it back afterward.
+      $originalTitle = CRM_Utils_System::$title;
+
       // For each of those settings-groups, process the given uf-group for display.
       foreach ($cdashProfileSettings as $cdashProfileSetting) {
         $ufId = $cdashProfileSetting['uf_group_id'];
@@ -281,6 +286,11 @@ function cdashtabs_civicrm_alterContent(&$content, $context, $tplName, &$object)
         $cdashContent .= "</div>";
         $cdashContent .= "</div>";
         $content .= $cdashContent;
+      }
+
+      // Re-set the page title to original; it probably was chagned above.
+      if (isset($originalTitle)) {
+        CRM_Utils_System::setTitle($originalTitle);
       }
     }
   }
