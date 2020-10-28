@@ -13,7 +13,7 @@ use CRM_Cdashtabs_ExtensionUtil as E;
 function cdashtabs_civicrm_buildForm($formName, &$form) {
   // By default, don't add cdashtabs field.
   $isCdash = FALSE;
-  
+
   // For the Profile edit settings form, add our custom configuration field.
   if ($formName == 'CRM_UF_Form_Group') {
     // Create new field.
@@ -237,5 +237,47 @@ function cdashtabs_civicrm_pageRun(&$page) {
   if ($pageName == 'CRM_Contact_Page_View_UserDashBoard') {
     CRM_Core_Resources::singleton()->addScriptFile('com.joineryhq.cdashtabs', 'js/cdashtabs.js', 100, 'page-footer');
     CRM_Core_Resources::singleton()->addStyleFile('com.joineryhq.cdashtabs', 'css/cdashtabs.css', 100, 'page-header');
+  }
+  $session = CRM_Core_Session::singleton();
+  $title = CRM_Core_DAO::getFieldValue("CRM_Core_DAO_UFGroup", $session->get('userID'), 'title', 'id');
+  print_r($title);
+}
+
+/**
+ * Alter fields for an event registration to make them into a demo form.
+ */
+function cdashtabs_civicrm_alterContent( &$content, $context, $tplName, &$object ) {
+  if($context == 'page') {
+    if($tplName == 'CRM\Contact\Page\View\UserDashBoard.tpl') {
+      $allUFGroup = CRM_Core_BAO_UFGroup::getModuleUFGroup('User Account', 0, TRUE);
+      $cdashContent = '';
+      foreach ($allUFGroup as $uFGroupKey => $uFGroup) {
+        // $uFGroupClass = strtolower(str_replace(' ', '-', $uFGroup['title']));
+        // $cdash = CRM_Cdashtabs_Settings::getUFGroupSettings($uFGroupKey);
+        // $cdashContent .= "<div id='crm-container' class='crm-container'>";
+        // $cdashContent .= "<div class='crm-profile-name-{$uFGroupClass}'>";
+        // $cdashContent .= "<table><tbody><tr><td>";
+        // $cdashContent .= "<div class='header-dark'>{$uFGroup['title']}</div>";
+        // $cdashContent .= "<div class='view-content'>";
+
+        // if ($cdash['is_cdash']) {
+        //   $uFFields = \Civi\Api4\UFField::get()
+        //     ->addWhere('uf_group.id', '=', $uFGroupKey)
+        //     ->execute();
+        //   foreach ($uFFields as $uFField) {
+        //     $uFMatches = \Civi\Api4\UFMatch::get()
+        //     ->addWhere('uf_id', '=', 1)->execute();
+        //     $cdashContent .= "<div id='row-{$uFField['field_name']}' class='crm-section {$uFField['field_name']}-section'>";
+        //     $cdashContent .= "<div class='label'>{$uFField['label']}</div>";
+        //     $cdashContent .= "<div class='content'></div><div class='clear'></div>";
+        //     $cdashContent .= "</div>";
+        //   }
+        // }
+
+        // $cdashContent .= "</div>";
+        // $cdashContent .= "</td></tr></tbody></table>";
+        // $cdashContent .= "</div></div>";
+      }
+    }
   }
 }
