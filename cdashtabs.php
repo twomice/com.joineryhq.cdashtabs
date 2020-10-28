@@ -235,49 +235,114 @@ function cdashtabs_civicrm_pageRun(&$page) {
   $pageName = $page->getVar('_name');
 
   if ($pageName == 'CRM_Contact_Page_View_UserDashBoard') {
+    CRM_Core_Resources::singleton()->addScriptFile('com.joineryhq.cdashtabs', 'js/cdashtabs-inject.js', 100, 'page-footer');
     CRM_Core_Resources::singleton()->addScriptFile('com.joineryhq.cdashtabs', 'js/cdashtabs.js', 100, 'page-footer');
     CRM_Core_Resources::singleton()->addStyleFile('com.joineryhq.cdashtabs', 'css/cdashtabs.css', 100, 'page-header');
   }
-  $session = CRM_Core_Session::singleton();
-  $title = CRM_Core_DAO::getFieldValue("CRM_Core_DAO_UFGroup", $session->get('userID'), 'title', 'id');
-  print_r($title);
 }
 
 /**
- * Alter fields for an event registration to make them into a demo form.
+ * Implements hook_civicrm_alterContent().
+ *
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_alterContent
  */
 function cdashtabs_civicrm_alterContent( &$content, $context, $tplName, &$object ) {
   if($context == 'page') {
     if($tplName == 'CRM\Contact\Page\View\UserDashBoard.tpl') {
+      $session = CRM_Core_Session::singleton();
       $allUFGroup = CRM_Core_BAO_UFGroup::getModuleUFGroup('User Account', 0, TRUE);
-      $cdashContent = '';
+      $cdashContent = '<div class="cdash-inject" style="display: none;">';
+
       foreach ($allUFGroup as $uFGroupKey => $uFGroup) {
-        // $uFGroupClass = strtolower(str_replace(' ', '-', $uFGroup['title']));
-        // $cdash = CRM_Cdashtabs_Settings::getUFGroupSettings($uFGroupKey);
-        // $cdashContent .= "<div id='crm-container' class='crm-container'>";
-        // $cdashContent .= "<div class='crm-profile-name-{$uFGroupClass}'>";
-        // $cdashContent .= "<table><tbody><tr><td>";
-        // $cdashContent .= "<div class='header-dark'>{$uFGroup['title']}</div>";
-        // $cdashContent .= "<div class='view-content'>";
+        $cdash = CRM_Cdashtabs_Settings::getUFGroupSettings($uFGroupKey);
 
-        // if ($cdash['is_cdash']) {
-        //   $uFFields = \Civi\Api4\UFField::get()
-        //     ->addWhere('uf_group.id', '=', $uFGroupKey)
-        //     ->execute();
-        //   foreach ($uFFields as $uFField) {
-        //     $uFMatches = \Civi\Api4\UFMatch::get()
-        //     ->addWhere('uf_id', '=', 1)->execute();
-        //     $cdashContent .= "<div id='row-{$uFField['field_name']}' class='crm-section {$uFField['field_name']}-section'>";
-        //     $cdashContent .= "<div class='label'>{$uFField['label']}</div>";
-        //     $cdashContent .= "<div class='content'></div><div class='clear'></div>";
-        //     $cdashContent .= "</div>";
-        //   }
-        // }
+        if (!empty($cdash['is_cdash'])) {
+          $profileFields = _cdashtabs_civicrm_getProfileGroupFields($session->get('userID'), $uFGroupKey);
+          $uFGroupClass = strtolower(str_replace(' ', '-', $uFGroup['title']));
+          $cdashContent .= "<div id='crm-container' class='crm-container cdash-inject-list'>";
+          $cdashContent .= "<table><tbody><tr class='crm-dashboard-{$uFGroupClass}'><td>";
+          $cdashContent .= "<div class='header-dark'>{$uFGroup['title']}</div>";
+          $cdashContent .= "<div class='view-content'>";
+          $cdashContent .= "<div class='crm-profile-name-{$uFGroupClass}'>";
 
-        // $cdashContent .= "</div>";
-        // $cdashContent .= "</td></tr></tbody></table>";
-        // $cdashContent .= "</div></div>";
+          foreach ($profileFields as $uFFieldKey => $uFField) {
+            $cdashContent .= "<div id='row-{$uFFieldKey}' class='crm-section {$uFFieldKey}-section'>";
+            $cdashContent .= "<div class='label'>{$uFField['label']}</div>";
+            $cdashContent .= "<div class='content'>{$uFField['value']}</div><div class='clear'></div>";
+            $cdashContent .= "</div>";
+          }
+
+          $cdashContent .= "</div></div>";
+          $cdashContent .= "</td></tr></tbody></table>";
+          $cdashContent .= "</div>";
+        }
       }
+
+      $cdashContent .= "</div>";
+      $content .= $cdashContent;
     }
   }
+}
+
+function _cdashtabs_civicrm_getProfileGroupFields($userID, $uFGroupID) {
+  $config = CRM_Core_Config::singleton();
+  $allowPermission = FALSE;
+  if (CRM_Core_Permission::check('administer users') || CRM_Core_Permission::check('view all contacts') || CRM_Contact_BAO_Contact_Permission::allow($userID)) {
+    $allowPermission = TRUE;
+  }
+
+  $fields = CRM_Core_BAO_UFGroup::getFields($uFGroupID, FALSE, CRM_Core_Action::VIEW,
+    NULL, NULL, FALSE, FALSE,
+    FALSE, NULL,
+    CRM_Core_Action::VIEW
+  );
+
+  // make sure we dont expose all fields based on permission
+  $admin = FALSE;
+  if ((!$config->userFrameworkFrontend && $allowPermission)) {
+    $admin = TRUE;
+  }
+
+  //reformat fields array
+  foreach ($fields as $name => $field) {
+    // also eliminate all formatting fields
+    if (CRM_Utils_Array::value('field_type', $field) == 'Formatting') {
+      unset($fields[$name]);
+    }
+
+    // make sure that there is enough permission to expose this field
+    if (!$admin && $field['visibility'] == 'User and User Admin Only') {
+      unset($fields[$name]);
+    }
+  }
+
+  // $profileFields array can be used for customized display of field labels and values in Profile/View.tpl
+  $values = [];
+
+  CRM_Core_BAO_UFGroup::getValues($userID, $fields, $values, TRUE, NULL, FALSE, NULL);
+  $profileFields = [];
+  $labels = [];
+
+  foreach ($fields as $name => $field) {
+    //CRM-14338
+    // Create a unique, non-empty index for each field.
+    $index = $field['title'];
+    if ($index === '') {
+      $index = ' ';
+    }
+    while (array_key_exists($index, $labels)) {
+      $index .= ' ';
+    }
+
+    $labels[$index] = preg_replace('/\s+|\W+/', '_', $name);
+  }
+
+  foreach ($values as $title => $value) {
+    $profileFields[$labels[$title]] = [
+      'label' => $title,
+      'value' => $value,
+    ];
+  }
+
+  return $profileFields;
 }
