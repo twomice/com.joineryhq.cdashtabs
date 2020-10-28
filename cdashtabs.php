@@ -41,7 +41,6 @@ function cdashtabs_civicrm_buildForm($formName, &$form) {
       $form->setDefaults($defaults);
     }
   }
-
 }
 
 /**
@@ -246,9 +245,9 @@ function cdashtabs_civicrm_pageRun(&$page) {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_alterContent
  */
-function cdashtabs_civicrm_alterContent( &$content, $context, $tplName, &$object ) {
-  if($context == 'page') {
-    if($tplName == 'CRM/Contact/Page/View/UserDashBoard.tpl') {
+function cdashtabs_civicrm_alterContent(&$content, $context, $tplName, &$object) {
+  if ($context == 'page') {
+    if ($tplName == 'CRM/Contact/Page/View/UserDashBoard.tpl') {
 
       // Hard-code uf-group-id = 1, for now. FIXME: We'll change this later.
       $id = 1;
@@ -262,18 +261,18 @@ function cdashtabs_civicrm_alterContent( &$content, $context, $tplName, &$object
       $profileContent .= $page->run();
 
       $cdashContent = '<div class="cdash-inject" style="display: none;">';
-          $uFGroupClass = strtolower(str_replace(' ', '-', $ufGroup['title']));
-          $cdashContent .= "<div id='crm-container' class='crm-container cdash-inject-list'>";
-          $cdashContent .= "<table><tbody><tr class='crm-dashboard-{$uFGroupClass}'><td>";
-          $cdashContent .= "<div class='header-dark'>{$ufGroup['title']}</div>";
-          $cdashContent .= "<div class='view-content'>";
-          $cdashContent .= "<div class='crm-profile-name-{$uFGroupClass}'>{$profileContent}";
-          $cdashContent .= "</div></div>";
-          $cdashContent .= "</td></tr></tbody></table>";
-          $cdashContent .= "</div>";
-        }
-      }
-
+      $uFGroupClass = strtolower(str_replace(' ', '-', $ufGroup['title']));
+      $cdashContent .= "<div id='crm-container' class='crm-container cdash-inject-list'>";
+      $cdashContent .= "<table><tbody><tr class='crm-dashboard-{$uFGroupClass}'><td>";
+      $cdashContent .= "<div class='header-dark'>{$ufGroup['title']}</div>";
+      $cdashContent .= "<div class='view-content'>";
+      $cdashContent .= "<div class='crm-profile-name-{$uFGroupClass}'>{$profileContent}";
+      $cdashContent .= "</div></div>";
+      $cdashContent .= "</td></tr></tbody></table>";
       $cdashContent .= "</div>";
-      $content .= $cdashContent;
+    }
+  }
+
+  $cdashContent .= "</div>";
+  $content .= $cdashContent;
 }
