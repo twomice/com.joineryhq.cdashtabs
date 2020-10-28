@@ -253,10 +253,11 @@ function cdashtabs_civicrm_alterContent(&$content, $context, $tplName, &$object)
       if (!empty($cdashProfileSettings)) {
         // We need the current contact ID to display the profiles properly.
         $userContactId = CRM_Core_Session::singleton()->getLoggedInContactID();
-        if (!$userContactId) {
-          // If there's no know contact id, we can't display profiles, so return.
-          return;
-        }
+      }
+
+      if (!$userContactId) {
+        // If there's no know contact id, we can't display profiles, so return.
+        return;
       }
       // Calls to profile page->run() below will change the page title, and
       // there's not much we can do about that. Store the current page title
