@@ -272,14 +272,14 @@ function cdashtabs_civicrm_alterContent(&$content, $context, $tplName, &$object)
           ->execute()
           ->first();
 
+        $groupTitle = $ufGroup['frontend_title'] ?? $ufGroup['title'];
         $page = new CRM_Profile_Page_Dynamic($userContactId, $ufId, NULL, TRUE);
         $profileContent = $page->run();
-
         $cdashContent = '<div class="cdash-inject" style="display: none;">';
-        $uFGroupClass = strtolower(str_replace(' ', '-', $ufGroup['title']));
+        $uFGroupClass = $ufGroup['id'];
         $cdashContent .= "<div id='crm-container' class='crm-container cdash-inject-list'>";
         $cdashContent .= "<table><tbody><tr class='crm-dashboard-{$uFGroupClass}'><td>";
-        $cdashContent .= "<div class='header-dark'>{$ufGroup['title']}</div>";
+        $cdashContent .= "<div class='header-dark'>{$groupTitle}</div>";
         $cdashContent .= "<div class='view-content'>";
         $cdashContent .= "<div class='crm-profile-name-{$uFGroupClass}'>{$profileContent}";
         $cdashContent .= "</div></div>";
