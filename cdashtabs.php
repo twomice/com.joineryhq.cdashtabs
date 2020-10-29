@@ -18,6 +18,7 @@ function cdashtabs_civicrm_buildForm($formName, &$form) {
   if ($formName == 'CRM_UF_Form_Group') {
     // Create new field.
     $form->addElement('checkbox', 'is_cdash', E::ts('Display on Contact Dashboard?'));
+    $form->addElement('checkbox', 'is_show_pre_post', E::ts('Display pre- and post-help on Contact Dashboard?'));
 
     // Assign bhfe fields to the template, so our new field has a place to live.
     $tpl = CRM_Core_Smarty::singleton();
@@ -26,6 +27,7 @@ function cdashtabs_civicrm_buildForm($formName, &$form) {
       $bhfe = array();
     }
     $bhfe[] = 'is_cdash';
+    $bhfe[] = 'is_show_pre_post';
     $form->assign('beginHookFormElements', $bhfe);
 
     // Add javascript that will relocate our field to a sensible place in the form.
@@ -37,6 +39,7 @@ function cdashtabs_civicrm_buildForm($formName, &$form) {
       $settings = CRM_Cdashtabs_Settings::getUFGroupSettings($gid);
       $defaults = array(
         'is_cdash' => $settings['is_cdash'],
+        'is_show_pre_post' => $settings['is_show_pre_post'],
       );
       $form->setDefaults($defaults);
     }
@@ -55,6 +58,7 @@ function cdashtabs_civicrm_postProcess($formName, &$form) {
     // saveAllUFGRoupSettings() assumes we're passing all setting values.
     $settings = CRM_Cdashtabs_Settings::getUFGroupSettings($gid);
     $settings['is_cdash'] = $form->_submitValues['is_cdash'];
+    $settings['is_show_pre_post'] = $form->_submitValues['is_show_pre_post'];
     CRM_Cdashtabs_Settings::saveAllUFGRoupSettings($gid, $settings);
   }
 }
@@ -279,6 +283,11 @@ function cdashtabs_civicrm_alterContent(&$content, $context, $tplName, &$object)
         $groupTitle = $ufGroup['frontend_title'] ?? $ufGroup['title'];
         $page = new CRM_Profile_Page_Dynamic($userContactId, $ufId, NULL, TRUE);
         $profileContent = $page->run();
+
+        if ($cdashProfileSetting['is_show_pre_post']) {
+          $profileContent = "{$ufGroup['help_pre']}{$profileContent}{$ufGroup['help_post']}";
+        }
+
         $cdashContent = '<div class="cdash-inject" style="display: none;">';
         $uFGroupClass = $ufGroup['id'];
         $cdashContent .= "<div id='crm-container' class='crm-container cdash-inject-list'>";
