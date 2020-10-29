@@ -256,7 +256,7 @@ function cdashtabs_civicrm_alterContent(&$content, $context, $tplName, &$object)
       $cdashProfileSettings = CRM_Cdashtabs_Settings::getFilteredUFGroupSettings(TRUE);
       if (!empty($cdashProfileSettings)) {
         // We need the current contact ID to display the profiles properly.
-        $userContactId = CRM_Core_Session::singleton()->getLoggedInContactID();
+        $userContactId = $object->_contactId;
       }
 
       if (!$userContactId) {
