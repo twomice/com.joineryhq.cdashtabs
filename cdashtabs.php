@@ -271,6 +271,10 @@ function cdashtabs_civicrm_alterContent(&$content, $context, $tplName, &$object)
           ->addWhere('id', '=', $ufId)
           ->execute()
           ->first();
+        if (!$ufGroup['is_active']){
+          // If profile is disabled, skip it.
+          continue;
+        }
 
         $groupTitle = $ufGroup['frontend_title'] ?? $ufGroup['title'];
         $page = new CRM_Profile_Page_Dynamic($userContactId, $ufId, NULL, TRUE);
