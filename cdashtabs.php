@@ -238,6 +238,7 @@ function cdashtabs_civicrm_pageRun(&$page) {
     CRM_Core_Resources::singleton()->addScriptFile('com.joineryhq.cdashtabs', 'js/cdashtabs.js', 100, 'page-footer');
     CRM_Core_Resources::singleton()->addStyleFile('com.joineryhq.cdashtabs', 'css/cdashtabs.css', 100, 'page-header');
   }
+  $cdashProfileSettings = CRM_Cdashtabs_Settings::getFilteredUFGroupSettings(TRUE);
 }
 
 /**
@@ -274,18 +275,14 @@ function cdashtabs_civicrm_alterContent(&$content, $context, $tplName, &$object)
 
         $page = new CRM_Profile_Page_Dynamic($userContactId, $ufId, NULL, TRUE);
         $profileContent = $page->run();
+        $ufGroupClass = strtolower(str_replace(' ', '-', $ufGroup['title']));
 
-        $cdashContent = '<div class="cdash-inject" style="display: none;">';
-        $uFGroupClass = strtolower(str_replace(' ', '-', $ufGroup['title']));
-        $cdashContent .= "<div id='crm-container' class='crm-container cdash-inject-list'>";
-        $cdashContent .= "<table><tbody><tr class='crm-dashboard-{$uFGroupClass}'><td>";
-        $cdashContent .= "<div class='header-dark'>{$ufGroup['title']}</div>";
-        $cdashContent .= "<div class='view-content'>";
-        $cdashContent .= "<div class='crm-profile-name-{$uFGroupClass}'>{$profileContent}";
-        $cdashContent .= "</div></div>";
-        $cdashContent .= "</td></tr></tbody></table>";
-        $cdashContent .= "</div>";
-        $cdashContent .= "</div>";
+        $tpl = CRM_Core_Smarty::singleton();
+        $tpl->assign('profileName', $ufGroupClass);
+        $tpl->assign('profileTitle', $ufGroup['title']);
+        $tpl->assign('profileContent', $profileContent);
+        $cdashContent = $tpl->fetch('CRM/Cdashtabs/snippet/injectedProfile.tpl');
+
         $content .= $cdashContent;
       }
 
