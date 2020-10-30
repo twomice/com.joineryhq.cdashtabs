@@ -247,7 +247,7 @@ function cdashtabs_civicrm_pageRun(&$page) {
  */
 function cdashtabs_civicrm_alterContent(&$content, $context, $tplName, &$object) {
   if ($context == 'page') {
-    if ($tplName == 'CRM/Contact/Page/View/UserDashBoard.tpl') {
+    if ($object->getVar('_name') == 'CRM_Contact_Page_View_UserDashBoard') {
       // Get a list of settings-per-uf-group where is_cdash = TRUE.
       $cdashProfileSettings = CRM_Cdashtabs_Settings::getFilteredUFGroupSettings(TRUE);
       if (!empty($cdashProfileSettings)) {
