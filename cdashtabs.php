@@ -62,7 +62,6 @@ function cdashtabs_civicrm_buildForm($formName, &$form) {
 
     // Set defaults so our field has the right value.
     $reportId = $form->getVar('_id');
-    print_r(CRM_Cdashtabs_Settings::getReportSettings($reportId));
     if ($reportId) {
       $settings = CRM_Cdashtabs_Settings::getReportSettings($reportId);
       $defaults = array(
