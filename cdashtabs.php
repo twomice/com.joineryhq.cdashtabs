@@ -44,6 +44,49 @@ function cdashtabs_civicrm_buildForm($formName, &$form) {
       $form->setDefaults($defaults);
     }
   }
+
+  if (in_array($formName, _cdashtabs_civicrm_reportFormNames())) {
+    // Create new field for reports form page
+    $form->addElement('checkbox', 'is_cdash', E::ts('Display on Contact Dashboard?'));
+    // Assign bhfe fields to the template, so our new field has a place to live.
+    $tpl = CRM_Core_Smarty::singleton();
+    $bhfe = $tpl->get_template_vars('beginHookFormElements');
+    if (!$bhfe) {
+      $bhfe = array();
+    }
+    $bhfe[] = 'is_cdash';
+    $form->assign('beginHookFormElements', $bhfe);
+
+    // Add javascript that will relocate our field to a sensible place in the form.
+    CRM_Core_Resources::singleton()->addScriptFile('com.joineryhq.cdashtabs', 'js/CRM_Report_Form.js');
+
+    // Set defaults so our field has the right value.
+    $reportId = $form->getVar('_id');
+    print_r(CRM_Cdashtabs_Settings::getReportSettings($reportId));
+    if ($reportId) {
+      $settings = CRM_Cdashtabs_Settings::getReportSettings($reportId);
+      $defaults = array(
+        'is_cdash' => $settings['is_cdash'],
+      );
+      $form->setDefaults($defaults);
+    }
+  }
+}
+
+/**
+ * Report form names
+ */
+function _cdashtabs_civicrm_reportFormNames() {
+  $reportFormNames = [
+    'CRM_Report_Form_Contact_Summary',
+    'CRM_Report_Form_Contact_Detail',
+    'CRM_Report_Form_Activity',
+    'CRM_Report_Form_Contact_CurrentEmployer',
+    'CRM_Report_Form_Contact_Relationship',
+    'CRM_Report_Form_ActivitySummary',
+  ];
+
+  return $reportFormNames;
 }
 
 /**
@@ -63,6 +106,25 @@ function cdashtabs_civicrm_postProcess($formName, &$form) {
   }
 }
 
+
+
+/**
+ * Implements hook_civicrm_post().
+ *
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_post
+ */
+function cdashtabs_civicrm_post($op, $objectName, $objectId, &$objectRef) {
+  if ($op == 'edit' && $objectName == 'ReportInstance') {
+    $formValues = unserialize($objectRef->form_values);
+
+    $isCdash = !empty($formValues['is_cdash']) ? 1 : 0;
+    // Get existing settings and add in our is_cdash value. (Because
+    // saveAllReportSettings() assumes we're passing all setting values.
+    $settings = CRM_Cdashtabs_Settings::getReportSettings($objectId);
+    $settings['is_cdash'] = $isCdash;
+    CRM_Cdashtabs_Settings::saveAllReportSettings($objectId, $settings);
+  }
+}
 /**
  * Implements hook_civicrm_config().
  *
