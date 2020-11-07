@@ -330,7 +330,7 @@ function cdashtabs_civicrm_alterContent(&$content, $context, $tplName, &$object)
         $groupTitle = $ufGroup['frontend_title'] ?? $ufGroup['title'];
         $page = new CRM_Profile_Page_Dynamic($userContactId, $ufId, NULL, TRUE);
         $profileContent = $page->run();
-        $ufGroupClass = strtolower(str_replace(' ', '-', $ufGroup['title']));
+        $ufGroupClass = strtolower(str_replace(' ', '-', $ufGroup['id']));
 
         $tpl = CRM_Core_Smarty::singleton();
         $tpl->assign('profileName', $ufGroupClass);
