@@ -43,9 +43,7 @@ function cdashtabs_civicrm_buildForm($formName, &$form) {
       );
       $form->setDefaults($defaults);
     }
-  }
-
-  if (in_array($formName, _cdashtabs_civicrm_reportFormNames())) {
+  } elseif (strpos($formName, 'CRM_Report_Form_') !== false) {
     // Create new field for reports form page
     $form->addElement('checkbox', 'is_cdash', E::ts('Display on Contact Dashboard?'));
     // Assign bhfe fields to the template, so our new field has a place to live.
@@ -70,22 +68,6 @@ function cdashtabs_civicrm_buildForm($formName, &$form) {
       $form->setDefaults($defaults);
     }
   }
-}
-
-/**
- * Report form names
- */
-function _cdashtabs_civicrm_reportFormNames() {
-  $reportFormNames = [
-    'CRM_Report_Form_Contact_Summary',
-    'CRM_Report_Form_Contact_Detail',
-    'CRM_Report_Form_Activity',
-    'CRM_Report_Form_Contact_CurrentEmployer',
-    'CRM_Report_Form_Contact_Relationship',
-    'CRM_Report_Form_ActivitySummary',
-  ];
-
-  return $reportFormNames;
 }
 
 /**
@@ -115,6 +97,10 @@ function cdashtabs_civicrm_postProcess($formName, &$form) {
 function cdashtabs_civicrm_post($op, $objectName, $objectId, &$objectRef) {
   if ($op == 'edit' && $objectName == 'ReportInstance') {
     $formValues = unserialize($objectRef->form_values);
+
+    if (empty($formValues)) {
+      return;
+    }
 
     $isCdash = !empty($formValues['is_cdash']) ? 1 : 0;
     // Get existing settings and add in our is_cdash value. (Because

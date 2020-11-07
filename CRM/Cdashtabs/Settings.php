@@ -82,10 +82,10 @@ class CRM_Cdashtabs_Settings {
       $createParams['option_group_id'] = "cdashtabs";
     }
 
-    // Add uf_group_id to settings. Without this, optionValue.create api was failing
+    // Add report_id to settings. Without this, optionValue.create api was failing
     // to save new settings with a message like "value already exists in the database"
     // if the values for this ufGroup are the same as for some other ufGroup. So by
-    // adding uf_group_id, we make it unique to this ufGroup.
+    // adding report_id, we make it unique to this ufGroup.
     $settings['report_id'] = $reportId;
     $createParams['value'] = json_encode($settings);
 
