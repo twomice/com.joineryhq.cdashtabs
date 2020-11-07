@@ -109,7 +109,7 @@ class CRM_Cdashtabs_Settings {
     $filteredSettings = [];
     $optionGroup = \Civi\Api4\OptionGroup::get()
       ->addWhere('name', '=', 'cdashtabs')
-      ->addChain('get_optionValue', \Civi\Api4\OptionValue::get()->addWhere('option_group_id', '=', '$id'))
+      ->addChain('get_optionValue', \Civi\Api4\OptionValue::get()->addWhere('option_group_id', '=', '$id')->addOrderBy('weight', 'ASC'))
       ->execute()
       ->first();
     foreach ($optionGroup['get_optionValue'] as $optionValue) {
