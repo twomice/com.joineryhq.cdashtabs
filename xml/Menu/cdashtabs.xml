@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<menu>
+  <item>
+    <path>civicrm/admin/cdashtabs/section</path>
+    <page_callback>CRM_Cdashtabs_Page_CDashTabs</page_callback>
+    <title>CDashTabs</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
+  <item>
+    <path>civicrm/admin/cdashtabs/section/update</path>
+    <page_callback>CRM_Cdashtabs_Form_CDashTabs</page_callback>
+    <title>CDashTabs</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
+</menu>
