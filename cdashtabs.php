@@ -264,17 +264,15 @@ function cdashtabs_civicrm_themes(&$themes) {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_navigationMenu
  */
-//function cdashtabs_civicrm_navigationMenu(&$menu) {
-//  _cdashtabs_civix_insert_navigation_menu($menu, 'Mailings', array(
-//    'label' => E::ts('New subliminal message'),
-//    'name' => 'mailing_subliminal_message',
-//    'url' => 'civicrm/mailing/subliminal',
-//    'permission' => 'access CiviMail',
-//    'operator' => 'OR',
-//    'separator' => 0,
-//  ));
-//  _cdashtabs_civix_navigationMenu($menu);
-//}
+function cdashtabs_civicrm_navigationMenu(&$menu) {
+ _cdashtabs_civix_insert_navigation_menu($menu, 'Administer/Customize Data and Screens', array(
+   'label' => E::ts('Contact Dashboard Tabs'),
+   'name' => 'Contact Dashboard Tabs',
+   'url' => 'civicrm/admin/cdashtabs/section?reset=1',
+   'permission' => 'access CiviCRM',
+ ));
+ _cdashtabs_civix_navigationMenu($menu);
+}
 
 /**
  * Implements hook_civicrm_pageRun().
