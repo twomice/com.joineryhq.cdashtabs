@@ -6,4 +6,10 @@
     <title>CDashTabs</title>
     <access_arguments>access CiviCRM</access_arguments>
   </item>
+  <item>
+    <path>civicrm/admin/cdashtabs/settings</path>
+    <page_callback>CRM_Cdashtabs_Form_Settings</page_callback>
+    <title>Settings</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
 </menu>

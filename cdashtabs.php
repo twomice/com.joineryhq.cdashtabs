@@ -265,13 +265,34 @@ function cdashtabs_civicrm_themes(&$themes) {
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_navigationMenu
  */
 function cdashtabs_civicrm_navigationMenu(&$menu) {
- _cdashtabs_civix_insert_navigation_menu($menu, 'Administer/Customize Data and Screens', array(
-   'label' => E::ts('Contact Dashboard Tabs'),
-   'name' => 'Contact Dashboard Tabs',
-   'url' => 'civicrm/admin/cdashtabs/section?reset=1',
-   'permission' => 'access CiviCRM',
- ));
- _cdashtabs_civix_navigationMenu($menu);
+  $pages = array(
+    'admin_page' => array(
+      'label'      => E::ts('Contact Dashboard Tabs'),
+      'name'       => 'Contact Dashboard Tabs',
+      'url'        => 'civicrm/admin/cdashtabs/section',
+      'parent' => array('Administer', 'Customize Data and Screens'),
+      'permission' => 'access CiviCRM',
+    ),
+    'settings_page' => array(
+      'label'      => E::ts('Settings'),
+      'name'       => 'Settings',
+      'url'        => 'civicrm/admin/cdashtabs/settings',
+      'parent'    => array('Administer', 'Customize Data and Screens', 'Contact Dashboard Tabs'),
+      'permission' => 'access CiviCRM',
+    ),
+  );
+
+  foreach ($pages as $item) {
+    // Check that our item doesn't already exist.
+    $menu_item_search = array('url' => $item['url']);
+    $menu_items = array();
+    CRM_Core_BAO_Navigation::retrieve($menu_item_search, $menu_items);
+    if (empty($menu_items)) {
+      $path = implode('/', $item['parent']);
+      unset($item['parent']);
+      _cdashtabs_civix_insert_navigation_menu($menu, $path, $item);
+    }
+  }
 }
 
 /**
@@ -344,4 +365,21 @@ function cdashtabs_civicrm_alterContent(&$content, $context, $tplName, &$object)
       }
     }
   }
+}
+
+/**
+ * CiviCRM API wrapper. Wraps with try/catch, redirects errors to log, saves
+ * typing.
+ */
+function _cdashtabs_civicrmapi(string $entity, string $action, array $params, bool $silence_errors = TRUE) {
+  try {
+    $result = civicrm_api3($entity, $action, $params);
+  } catch (CiviCRM_API3_Exception $e) {
+    _hnremoteform_log_api_error($e, $entity, $action, $params);
+    if (!$silence_errors) {
+      throw $e;
+    }
+  }
+
+  return $result;
 }
