@@ -1,7 +1,7 @@
 <?php
 use CRM_Cdashtabs_ExtensionUtil as E;
 
-class CRM_Cdashtabs_Page_CDashTabs extends CRM_Core_Page {
+class CRM_Cdashtabs_Page_Section extends CRM_Core_Page {
 
   public $useLivePageJS = TRUE;
 
