@@ -3,10 +3,10 @@
 use CRM_Cdashtabs_ExtensionUtil as E;
 
 return array(
-  'cdashtabs_source_hide' => array(
-    'group_name' => 'Cdashtabs Settings',
+  'cdashtabs_use_tabs' => array(
+    'group_name' => 'Cdashtabs Use Tabs',
     'group' => 'cdashtabs',
-    'name' => 'cdashtabs_source_hide',
+    'name' => 'cdashtabs_use_tabs',
     'add' => '5.0',
     'is_domain' => 1,
     'is_contact' => 0,

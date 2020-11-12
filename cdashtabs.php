@@ -269,14 +269,14 @@ function cdashtabs_civicrm_navigationMenu(&$menu) {
     'admin_page' => array(
       'label'      => E::ts('Contact Dashboard Tabs'),
       'name'       => 'Contact Dashboard Tabs',
-      'url'        => 'civicrm/admin/cdashtabs/section',
+      'url'        => 'civicrm/admin/cdashtabs/section?reset=1',
       'parent' => array('Administer', 'Customize Data and Screens'),
       'permission' => 'access CiviCRM',
     ),
     'settings_page' => array(
       'label'      => E::ts('Settings'),
       'name'       => 'Settings',
-      'url'        => 'civicrm/admin/cdashtabs/settings',
+      'url'        => 'civicrm/admin/cdashtabs/settings?reset=1',
       'parent'    => array('Administer', 'Customize Data and Screens', 'Contact Dashboard Tabs'),
       'permission' => 'access CiviCRM',
     ),
@@ -303,7 +303,8 @@ function cdashtabs_civicrm_navigationMenu(&$menu) {
 function cdashtabs_civicrm_pageRun(&$page) {
   $pageName = $page->getVar('_name');
 
-  if ($pageName == 'CRM_Contact_Page_View_UserDashBoard') {
+  $useTabs = Civi::settings()->get('cdashtabs_use_tabs');
+  if ($pageName == 'CRM_Contact_Page_View_UserDashBoard' && $useTabs) {
     CRM_Core_Resources::singleton()->addScriptFile('com.joineryhq.cdashtabs', 'js/cdashtabs-inject.js', 100, 'page-footer');
     CRM_Core_Resources::singleton()->addScriptFile('com.joineryhq.cdashtabs', 'js/cdashtabs.js', 100, 'page-footer');
     CRM_Core_Resources::singleton()->addStyleFile('com.joineryhq.cdashtabs', 'css/cdashtabs.css', 100, 'page-header');
