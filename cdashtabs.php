@@ -36,7 +36,7 @@ function cdashtabs_civicrm_buildForm($formName, &$form) {
     // Set defaults so our field has the right value.
     $gid = $form->getVar('_id');
     if ($gid) {
-      $settings = CRM_Cdashtabs_Settings::getUFGroupSettings($gid);
+      $settings = CRM_Cdashtabs_Settings::getSettings($gid, 'ufgroup');
       $defaults = array(
         'is_cdash' => $settings['is_cdash'],
         'is_show_pre_post' => $settings['is_show_pre_post'],
@@ -61,7 +61,7 @@ function cdashtabs_civicrm_buildForm($formName, &$form) {
     // Set defaults so our field has the right value.
     $reportId = $form->getVar('_id');
     if ($reportId) {
-      $settings = CRM_Cdashtabs_Settings::getReportSettings($reportId);
+      $settings = CRM_Cdashtabs_Settings::getSettings($reportId, 'report');
       $defaults = array(
         'is_cdash' => $settings['is_cdash'],
       );
@@ -79,11 +79,11 @@ function cdashtabs_civicrm_postProcess($formName, &$form) {
   if ($formName == 'CRM_UF_Form_Group') {
     $gid = $form->getVar('_id');
     // Get existing settings and add in our is_cdash value. (Because
-    // saveAllUFGRoupSettings() assumes we're passing all setting values.
-    $settings = CRM_Cdashtabs_Settings::getUFGroupSettings($gid);
+    // saveAllSettings() assumes we're passing all setting values.
+    $settings = CRM_Cdashtabs_Settings::getSettings($gid, 'ufgroup');
     $settings['is_cdash'] = $form->_submitValues['is_cdash'];
     $settings['is_show_pre_post'] = $form->_submitValues['is_show_pre_post'];
-    CRM_Cdashtabs_Settings::saveAllUFGRoupSettings($gid, $settings);
+    CRM_Cdashtabs_Settings::saveAllSettings($gid, $settings, 'ufgroup');
   }
 }
 
@@ -104,10 +104,10 @@ function cdashtabs_civicrm_post($op, $objectName, $objectId, &$objectRef) {
 
     $isCdash = !empty($formValues['is_cdash']) ? 1 : 0;
     // Get existing settings and add in our is_cdash value. (Because
-    // saveAllReportSettings() assumes we're passing all setting values.
-    $settings = CRM_Cdashtabs_Settings::getReportSettings($objectId);
+    // saveAllSettings() assumes we're passing all setting values.
+    $settings = CRM_Cdashtabs_Settings::getSettings($objectId, 'report');
     $settings['is_cdash'] = $isCdash;
-    CRM_Cdashtabs_Settings::saveAllReportSettings($objectId, $settings);
+    CRM_Cdashtabs_Settings::saveAllSettings($objectId, $settings, 'report');
   }
 }
 /**
@@ -323,7 +323,7 @@ function cdashtabs_civicrm_alterContent(&$content, $context, $tplName, &$object)
   if ($context == 'page') {
     if ($object->getVar('_name') == 'CRM_Contact_Page_View_UserDashBoard') {
       // Get a list of settings-per-uf-group where is_cdash = TRUE.
-      $cdashProfileSettings = CRM_Cdashtabs_Settings::getFilteredUFGroupSettings(TRUE);
+      $cdashProfileSettings = CRM_Cdashtabs_Settings::getFilteredSettings(TRUE, 'ufgroup');
       if (!empty($cdashProfileSettings)) {
         // We need the current contact ID to display the profiles properly.
         $userContactId = $object->_contactId;
