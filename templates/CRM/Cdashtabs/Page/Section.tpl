@@ -1,5 +1,5 @@
 {if $action eq 2}
-  {include file="CRM/CDashTabs/Form/CDashTabs.tpl"}
+  {include file="CRM/Cdashtabs/Form/Section.tpl"}
 {else}
 <div class="crm-content-block crm-block">
   <table id="options" class="row-highlight">

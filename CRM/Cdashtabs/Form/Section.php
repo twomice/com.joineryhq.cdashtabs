@@ -7,7 +7,7 @@ use CRM_Cdashtabs_ExtensionUtil as E;
  *
  * @see https://docs.civicrm.org/dev/en/latest/framework/quickform/
  */
-class CRM_Cdashtabs_Form_CDashTabs extends CRM_Core_Form {
+class CRM_Cdashtabs_Form_Section extends CRM_Core_Form {
 
   /**
    * Pre-process

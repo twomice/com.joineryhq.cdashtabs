@@ -75,7 +75,7 @@ class CRM_Cdashtabs_Page_Section extends CRM_Core_Page {
    */
   public function edit($action) {
     // create a simple controller for editing custom data
-    $controller = new CRM_Core_Controller_Simple('CRM_Cdashtabs_Form_CDashTabs', ts('Contact Dashboard Tabs: Sections'), $action);
+    $controller = new CRM_Core_Controller_Simple('CRM_Cdashtabs_Form_Section', ts('Contact Dashboard Tabs: Sections'), $action);
 
     // set the userContext stack
     $session = CRM_Core_Session::singleton();

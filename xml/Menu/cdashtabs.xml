@@ -3,7 +3,7 @@
   <item>
     <path>civicrm/admin/cdashtabs/section</path>
     <page_callback>CRM_Cdashtabs_Page_Section</page_callback>
-    <title>CDashTabs</title>
+    <title>Cdashtabs</title>
     <access_arguments>access CiviCRM</access_arguments>
   </item>
   <item>
