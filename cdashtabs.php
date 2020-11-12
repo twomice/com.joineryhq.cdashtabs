@@ -308,6 +308,37 @@ function cdashtabs_civicrm_pageRun(&$page) {
     CRM_Core_Resources::singleton()->addScriptFile('com.joineryhq.cdashtabs', 'js/cdashtabs-inject.js', 100, 'page-footer');
 
     if ($useTabs) {
+      $optionValues = \Civi\Api4\OptionValue::get()
+        ->addWhere('option_group_id', '=', 108)
+        ->addWhere('is_active', '=', TRUE)
+        ->addOrderBy('weight', 'ASC')
+        ->execute();
+
+      foreach ($optionValues as $key => $optionValue) {
+        $optionLabel = explode('_', $optionValue['label']);
+        $optionValueId = end($optionLabel);
+        $optionValues[$key]['class'] = $optionValueId;
+        $optionValueType = array_shift($optionLabel);
+
+        if (strpos($optionValue['label'], 'native_') !== false) {
+          $optionClass = str_replace(' ', '', $optionValue['name']);
+          $optionValues[$key]['class'] = strtolower($optionClass);
+
+          if ($optionValue['name'] == trim($optionValue['name']) && strpos($optionValue['name'], ' ') !== false) {
+            $optionValues[$key]['class'] = lcfirst($optionClass);
+          }
+
+          //  Rewrite option value name for button label (user dashboard option)
+          $optionValues[$key]['name'] = CRM_Cdashtabs_Settings::getTitleTypeSettings($optionValue['value'], $optionValueType);
+        } else {
+          //  Rewrite option value name for button label (ufgroup and report)
+          $optionValues[$key]['name'] = CRM_Cdashtabs_Settings::getTitleTypeSettings($optionValueId, $optionValueType);
+        }
+      }
+
+      $cdashtabs['options'] = $optionValues;
+      CRM_Core_Resources::singleton()->addVars('cdashtabs', $cdashtabs);
+
       CRM_Core_Resources::singleton()->addScriptFile('com.joineryhq.cdashtabs', 'js/cdashtabs.js', 100, 'page-footer');
       CRM_Core_Resources::singleton()->addStyleFile('com.joineryhq.cdashtabs', 'css/cdashtabs.css', 100, 'page-header');
     }
@@ -324,6 +355,7 @@ function cdashtabs_civicrm_alterContent(&$content, $context, $tplName, &$object)
     if ($object->getVar('_name') == 'CRM_Contact_Page_View_UserDashBoard') {
       // Get a list of settings-per-uf-group where is_cdash = TRUE.
       $cdashProfileSettings = CRM_Cdashtabs_Settings::getFilteredSettings(TRUE, 'ufgroup');
+      $userContactId = NULL;
       if (!empty($cdashProfileSettings)) {
         // We need the current contact ID to display the profiles properly.
         $userContactId = $object->_contactId;

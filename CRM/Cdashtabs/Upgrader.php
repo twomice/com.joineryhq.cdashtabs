@@ -21,6 +21,31 @@ class CRM_Cdashtabs_Upgrader extends CRM_Cdashtabs_Upgrader_Base {
       'is_locked' => 1,
       'is_reserved' => 1,
     ));
+
+    $nativeUserDashboardOptions = civicrm_api3('OptionValue', 'get', [
+      'sequential' => 1,
+      'option_group_id' => "user_dashboard_options",
+      // Exclude Invoices / Credit Notes
+      'value' => ['!=' => 10],
+      'options' => ['sort' => "weight"],
+    ]);
+
+    foreach ($nativeUserDashboardOptions['values'] as $option) {
+      // Disable Assigned Activities
+      $optionActive = $option['value'] == 9 ? 0 : $option['is_active'];
+      // Copy user dashboard options to cdashtabs for tab order
+      $newCdashtabsOption = civicrm_api3('OptionValue', 'create', [
+        'option_group_id' => "cdashtabs",
+        'label' => "native_{$option['value']}",
+        'value' => $option['value'],
+        'name' => $option['name'],
+        'filter' => $option['filter'],
+        'weight' => $option['weight'],
+        'is_optgroup' => $option['is_optgroup'],
+        'is_reserved' => $option['is_reserved'],
+        'is_active' => $optionActive
+      ]);
+    }
   }
 
   /**

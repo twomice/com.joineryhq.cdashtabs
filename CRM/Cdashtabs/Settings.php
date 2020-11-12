@@ -81,4 +81,30 @@ class CRM_Cdashtabs_Settings {
     return $filteredSettings;
   }
 
+  public static function getTitleTypeSettings($id, $type) {
+    $title = '';
+    if ($type === 'ufgroup') {
+      $uFGroups = \Civi\Api4\UFGroup::get()
+        ->addWhere('id', '=', $id)
+        ->setLimit(1)
+        ->execute();
+      foreach ($uFGroups as $uFGroup) {
+        $title = $uFGroup['title'];
+      }
+    } elseif ($type === 'report') {
+      // civicrm_report_instance (no api)
+    } elseif ($type === 'native') {
+      $optionValues = \Civi\Api4\OptionValue::get()
+        ->addWhere('option_group_id', '=', 20)
+        ->addWhere('value', '=', $id)
+        ->setLimit(1)
+        ->execute();
+      foreach ($optionValues as $optionValue) {
+        $title = $optionValue['label'];
+      }
+    }
+
+    return $title;
+  }
+
 }

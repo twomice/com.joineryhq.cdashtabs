@@ -8,15 +8,10 @@ CRM.$(function($){
   // Get tab button main element
   var cdashtabs = $('.cdashtabs');
 
-  // Hide and get each row class and label for the button target and label
-  mainTable.find('> tbody > tr').each(function(){
-    var cTrClass = $(this).attr('class'),
-        cTrLabel = $('td:first-child > div:first-child', this).text(),
-        btnLabel = cTrLabel.replace('Your ', '');
-
+  for (i in CRM.vars.cdashtabs.options) {
     // Append button with data-target and label
-    cdashtabs.append('<button data-target="' + cTrClass + '">' + btnLabel + '</button>');
-  });
+    cdashtabs.append('<button data-target="crm-dashboard-' + CRM.vars.cdashtabs.options[i].class + '">' + CRM.vars.cdashtabs.options[i].name + '</button>');
+  }
 
   // Add button show/hide row functionality when clicked
   $(document).on('click', '.cdashtabs button', function(e) {
