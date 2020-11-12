@@ -303,11 +303,14 @@ function cdashtabs_civicrm_navigationMenu(&$menu) {
 function cdashtabs_civicrm_pageRun(&$page) {
   $pageName = $page->getVar('_name');
 
-  $useTabs = Civi::settings()->get('cdashtabs_use_tabs');
-  if ($pageName == 'CRM_Contact_Page_View_UserDashBoard' && $useTabs) {
+  if ($pageName == 'CRM_Contact_Page_View_UserDashBoard') {
+    $useTabs = Civi::settings()->get('cdashtabs_use_tabs');
     CRM_Core_Resources::singleton()->addScriptFile('com.joineryhq.cdashtabs', 'js/cdashtabs-inject.js', 100, 'page-footer');
-    CRM_Core_Resources::singleton()->addScriptFile('com.joineryhq.cdashtabs', 'js/cdashtabs.js', 100, 'page-footer');
-    CRM_Core_Resources::singleton()->addStyleFile('com.joineryhq.cdashtabs', 'css/cdashtabs.css', 100, 'page-header');
+
+    if ($useTabs) {
+      CRM_Core_Resources::singleton()->addScriptFile('com.joineryhq.cdashtabs', 'js/cdashtabs.js', 100, 'page-footer');
+      CRM_Core_Resources::singleton()->addStyleFile('com.joineryhq.cdashtabs', 'css/cdashtabs.css', 100, 'page-header');
+    }
   }
 }
 
