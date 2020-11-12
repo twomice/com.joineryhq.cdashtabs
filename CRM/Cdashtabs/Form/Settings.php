@@ -89,7 +89,11 @@ class CRM_Cdashtabs_Form_Settings extends CRM_Core_Form {
         'type' => 'submit',
         'name' => ts('Submit'),
         'isDefault' => TRUE,
-      )
+      ),
+      array (
+        'type' => 'cancel',
+        'name' => ts('Cancel'),
+      ),
     ));
 
     $style_path = CRM_Core_Resources::singleton()->getPath(self::$extensionName, 'css/extension.css');
@@ -99,13 +103,16 @@ class CRM_Cdashtabs_Form_Settings extends CRM_Core_Form {
 
     // export form elements
     $this->assign('elementNames', $this->getRenderableElementNames());
+
+    $session = CRM_Core_Session::singleton();
+    $session->pushUserContext(CRM_Utils_System::url('civicrm/admin/cdashtabs/section', 'reset=1', true));
     parent::buildQuickForm();
   }
 
   function postProcess() {
     $this->_submittedValues = $this->exportValues();
     $this->saveSettings();
-    CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/admin/cdashtabs/settings', 'reset=1'));
+    // CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/admin/cdashtabs/section', 'reset=1'));
     parent::postProcess();
   }
 

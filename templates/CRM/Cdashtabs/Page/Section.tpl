@@ -24,5 +24,8 @@
   {/foreach}
   </tbody>
   </table>
+  <div class="action-link">
+    {crmButton p="civicrm/admin/cdashtabs/settings" q="reset=1"}{ts}Settings{/ts}{/crmButton}
+  </div>
 </div>
 {/if}
