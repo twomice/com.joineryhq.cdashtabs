@@ -6,7 +6,7 @@
  */
 class CRM_Cdashtabs_Settings {
 
-  public static function getSettings($ufGroupId, $type) {
+  public static function getSettings($id, $type) {
     $settingName = "{$type}_settings_{$ufGroupId}";
     $result = civicrm_api3('OptionValue', 'get', array(
       'sequential' => 1,
@@ -18,7 +18,7 @@ class CRM_Cdashtabs_Settings {
     return json_decode($settingJson, TRUE);
   }
 
-  public static function saveAllSettings($ufGroupId, $settings, $type) {
+  public static function saveAllSettings($id, $settings, $type) {
     $settingName = "{$type}_settings_{$ufGroupId}";
     $result = civicrm_api3('OptionValue', 'get', array(
       'sequential' => 1,
