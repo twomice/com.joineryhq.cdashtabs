@@ -404,6 +404,18 @@ function cdashtabs_civicrm_alterContent(&$content, $context, $tplName, &$object)
 }
 
 /**
+ * Log CiviCRM API errors to CiviCRM log.
+ */
+function _cdashtabs_log_api_error(CiviCRM_API3_Exception $e, string $entity, string $action, array $params) {
+  $message = "CiviCRM API Error '{$entity}.{$action}': ". $e->getMessage() .'; ';
+  $message .= "API parameters when this error happened: ". json_encode($params) .'; ';
+  $bt = debug_backtrace();
+  $error_location = "{$bt[1]['file']}::{$bt[1]['line']}";
+  $message .= "Error API called from: $error_location";
+  CRM_Core_Error::debug_log_message($message);
+}
+
+/**
  * CiviCRM API wrapper. Wraps with try/catch, redirects errors to log, saves
  * typing.
  */
@@ -411,7 +423,7 @@ function _cdashtabs_civicrmapi(string $entity, string $action, array $params, bo
   try {
     $result = civicrm_api3($entity, $action, $params);
   } catch (CiviCRM_API3_Exception $e) {
-    _hnremoteform_log_api_error($e, $entity, $action, $params);
+    _cdashtabs_log_api_error($e, $entity, $action, $params);
     if (!$silence_errors) {
       throw $e;
     }
