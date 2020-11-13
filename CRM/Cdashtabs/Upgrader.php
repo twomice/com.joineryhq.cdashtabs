@@ -14,6 +14,7 @@ class CRM_Cdashtabs_Upgrader extends CRM_Cdashtabs_Upgrader_Base {
    */
   public function install() {
     $results = \Civi\Api4\OptionGroup::create()
+      ->setCheckPermissions(FALSE)
       ->addValue('name', 'cdashtabs')
       ->addValue('title', 'Contact Dadshboard Tabs Extension Options')
       ->addValue('is_active', TRUE)
@@ -22,6 +23,7 @@ class CRM_Cdashtabs_Upgrader extends CRM_Cdashtabs_Upgrader_Base {
       ->execute();
 
     $nativeUserDashboardOptions = \Civi\Api4\OptionValue::get()
+      ->setCheckPermissions(FALSE)
       ->addWhere('option_group_id:name', '=', 'user_dashboard_options')
       ->addWhere('value', '!=', 10)
       ->addOrderBy('weight', 'ASC')
@@ -32,6 +34,7 @@ class CRM_Cdashtabs_Upgrader extends CRM_Cdashtabs_Upgrader_Base {
       $optionActive = $option['value'] == 9 ? 0 : $option['is_active'];
       // Copy user dashboard options to cdashtabs for tab order
       $newCdashtabsOption = \Civi\Api4\OptionValue::create()
+        ->setCheckPermissions(FALSE)
         ->addValue('option_group_id:name', 'cdashtabs')
         ->addValue('label', $option['label'])
         ->addValue('value', $option['value'])
@@ -69,12 +72,14 @@ class CRM_Cdashtabs_Upgrader extends CRM_Cdashtabs_Upgrader_Base {
    public function uninstall() {
     try {
       $optionGroups = \Civi\Api4\OptionGroup::get()
+        ->setCheckPermissions(FALSE)
         ->addSelect('id')
         ->addWhere('name', '=', 'cdashtabs')
         ->setLimit(25)
         ->execute();
       foreach ($optionGroups as $optionGroup) {
         $results = \Civi\Api4\OptionGroup::delete()
+          ->setCheckPermissions(FALSE)
           ->addWhere('id', '=', $optionGroup['id'])
           ->execute();
       }
