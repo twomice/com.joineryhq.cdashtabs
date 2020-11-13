@@ -8,23 +8,22 @@ class CRM_Cdashtabs_Settings {
 
   public static function getSettings($id, $type) {
     $settingName = "{$type}_settings_{$id}";
-    $result = civicrm_api3('OptionValue', 'get', array(
-      'sequential' => 1,
-      'option_group_id' => "cdashtabs",
-      'name' => $settingName,
-    ));
-    $resultValue = CRM_Utils_Array::value(0, $result['values'], array());
+    $result = \Civi\Api4\OptionValue::get()
+    ->addWhere('option_group_id:name', '=', 'cdashtabs')
+    ->addWhere('name', '=', $settingName)
+    ->execute();
+
+    $resultValue = CRM_Utils_Array::value(0, $result, array());
     $settingJson = CRM_Utils_Array::value('value', $resultValue, '{}');
     return json_decode($settingJson, TRUE);
   }
 
   public static function saveAllSettings($id, $settings, $type) {
     $settingName = "{$type}_settings_{$id}";
-    $result = civicrm_api3('OptionValue', 'get', array(
-      'sequential' => 1,
-      'option_group_id' => "cdashtabs",
-      'name' => $settingName,
-    ));
+    $result = \Civi\Api4\OptionValue::get()
+    ->addWhere('option_group_id:name', '=', 'cdashtabs')
+    ->addWhere('name', '=', $settingName)
+    ->execute();
 
     $createParams = array();
 

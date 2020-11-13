@@ -13,38 +13,35 @@ class CRM_Cdashtabs_Upgrader extends CRM_Cdashtabs_Upgrader_Base {
    * Example: Run an external SQL script when the module is installed.
    */
   public function install() {
-    $result = civicrm_api3('OptionGroup', 'create', array(
-      'sequential' => 1,
-      'name' => "cdashtabs",
-      'title' => "Contact Dadshboard Tabs Extension Options",
-      'is_active' => 1,
-      'is_locked' => 1,
-      'is_reserved' => 1,
-    ));
+    $results = \Civi\Api4\OptionGroup::create()
+      ->addValue('name', 'cdashtabs')
+      ->addValue('title', 'Contact Dadshboard Tabs Extension Options')
+      ->addValue('is_active', TRUE)
+      ->addValue('is_locked', TRUE)
+      ->addValue('is_reserved', TRUE)
+      ->execute();
 
-    $nativeUserDashboardOptions = civicrm_api3('OptionValue', 'get', [
-      'sequential' => 1,
-      'option_group_id' => "user_dashboard_options",
-      // Exclude Invoices / Credit Notes
-      'value' => ['!=' => 10],
-      'options' => ['sort' => "weight"],
-    ]);
+    $nativeUserDashboardOptions = \Civi\Api4\OptionValue::get()
+      ->addWhere('option_group_id:name', '=', 'user_dashboard_options')
+      ->addWhere('value', '!=', 10)
+      ->addOrderBy('weight', 'ASC')
+      ->execute();
 
-    foreach ($nativeUserDashboardOptions['values'] as $option) {
+    foreach ($nativeUserDashboardOptions as $option) {
       // Disable Assigned Activities
       $optionActive = $option['value'] == 9 ? 0 : $option['is_active'];
       // Copy user dashboard options to cdashtabs for tab order
-      $newCdashtabsOption = civicrm_api3('OptionValue', 'create', [
-        'option_group_id' => "cdashtabs",
-        'label' => $option['label'],
-        'value' => $option['value'],
-        'name' => "native_{$option['value']}",
-        'filter' => $option['filter'],
-        'weight' => $option['weight'],
-        'is_optgroup' => $option['is_optgroup'],
-        'is_reserved' => $option['is_reserved'],
-        'is_active' => $optionActive
-      ]);
+      $newCdashtabsOption = \Civi\Api4\OptionValue::create()
+        ->addValue('option_group_id:name', 'cdashtabs')
+        ->addValue('label', $option['label'])
+        ->addValue('value', $option['value'])
+        ->addValue('name', "native_{$option['value']}")
+        ->addValue('filter', $option['filter'])
+        ->addValue('weight', $option['weight'])
+        ->addValue('is_optgroup', $option['is_optgroup'])
+        ->addValue('is_reserved', $option['is_reserved'])
+        ->addValue('is_active', $optionActive)
+        ->execute();
     }
   }
 
@@ -71,14 +68,16 @@ class CRM_Cdashtabs_Upgrader extends CRM_Cdashtabs_Upgrader_Base {
    */
    public function uninstall() {
     try {
-      $optionGroupId = civicrm_api3('OptionGroup', 'getvalue', array(
-        'sequential' => 1,
-        'return' => "id",
-        'name' => "cdashtabs",
-      ));
-      $optionGroupId = civicrm_api3('OptionGroup', 'delete', array(
-        'id' => $optionGroupId,
-      ));
+      $optionGroups = \Civi\Api4\OptionGroup::get()
+        ->addSelect('id')
+        ->addWhere('name', '=', 'cdashtabs')
+        ->setLimit(25)
+        ->execute();
+      foreach ($optionGroups as $optionGroup) {
+        $results = \Civi\Api4\OptionGroup::delete()
+          ->addWhere('id', '=', $optionGroup['id'])
+          ->execute();
+      }
     }
     catch (CiviCRM_API3_Exception $e) {
     }
