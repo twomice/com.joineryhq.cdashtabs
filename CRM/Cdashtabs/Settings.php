@@ -93,21 +93,6 @@ class CRM_Cdashtabs_Settings {
       }
     } elseif ($type === 'report') {
       // civicrm_report_instance (no api)
-    } elseif ($type === 'native') {
-      $userDashboardOptionId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup',
-        'user_dashboard_options',
-        'id',
-        'name'
-      );
-
-      $optionValues = \Civi\Api4\OptionValue::get()
-        ->addWhere('option_group_id', '=', $userDashboardOptionId)
-        ->addWhere('value', '=', $id)
-        ->setLimit(1)
-        ->execute();
-      foreach ($optionValues as $optionValue) {
-        $title = $optionValue['label'];
-      }
     }
 
     return $title;
