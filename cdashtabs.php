@@ -308,13 +308,16 @@ function cdashtabs_civicrm_pageRun(&$page) {
     CRM_Core_Resources::singleton()->addScriptFile('com.joineryhq.cdashtabs', 'js/cdashtabs-inject.js', 100, 'page-footer');
 
     if ($useTabs) {
-      $optionValues = \Civi\Api4\OptionValue::get()
-        ->addWhere('option_group_id', '=', 108)
-        ->addWhere('is_active', '=', TRUE)
-        ->addOrderBy('weight', 'ASC')
-        ->execute();
+      $optionGroup = \Civi\Api4\OptionGroup::get()
+      ->addWhere('name', '=', 'cdashtabs')
+      ->addChain('get_optionValue', \Civi\Api4\OptionValue::get()
+      ->addWhere('option_group_id', '=', '$id')
+      ->addWhere('is_active', '=', TRUE)
+      ->addOrderBy('weight', 'ASC'))
+      ->execute()
+      ->first();
 
-      foreach ($optionValues as $key => $optionValue) {
+     foreach ($optionGroup['get_optionValue'] as $key => $optionValue) {
         $optionLabel = explode('_', $optionValue['label']);
         $optionValueId = end($optionLabel);
         $optionValues[$key]['class'] = $optionValueId;

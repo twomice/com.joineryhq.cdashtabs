@@ -7,7 +7,7 @@
 class CRM_Cdashtabs_Settings {
 
   public static function getSettings($id, $type) {
-    $settingName = "{$type}_settings_{$ufGroupId}";
+    $settingName = "{$type}_settings_{$id}";
     $result = civicrm_api3('OptionValue', 'get', array(
       'sequential' => 1,
       'option_group_id' => "cdashtabs",
@@ -19,7 +19,7 @@ class CRM_Cdashtabs_Settings {
   }
 
   public static function saveAllSettings($id, $settings, $type) {
-    $settingName = "{$type}_settings_{$ufGroupId}";
+    $settingName = "{$type}_settings_{$id}";
     $result = civicrm_api3('OptionValue', 'get', array(
       'sequential' => 1,
       'option_group_id' => "cdashtabs",
@@ -41,7 +41,7 @@ class CRM_Cdashtabs_Settings {
     // if the values for this ufGroup are the same as for some other ufGroup. So by
     // adding uf_group_id, we make it unique to this ufGroup.
     $settingType = $type === 'ufgroup' ? 'uf_group' : $type;
-    $settings["{$settingType}_id"] = $ufGroupId;
+    $settings["{$settingType}_id"] = $id;
     $createParams['value'] = json_encode($settings);
 
     try {
