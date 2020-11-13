@@ -318,18 +318,14 @@ function cdashtabs_civicrm_pageRun(&$page) {
       ->first();
 
      foreach ($optionGroup['get_optionValue'] as $key => $optionValue) {
-        $optionLabel = explode('_', $optionValue['label']);
+        $optionLabel = explode('_', $optionValue['name']);
         $optionValueId = end($optionLabel);
         $optionValues[$key]['class'] = $optionValueId;
         $optionValueType = array_shift($optionLabel);
 
-        if (strpos($optionValue['label'], 'native_') !== false) {
-          $optionClass = str_replace(' ', '', $optionValue['name']);
-          $optionValues[$key]['class'] = strtolower($optionClass);
-
-          if ($optionValue['name'] == trim($optionValue['name']) && strpos($optionValue['name'], ' ') !== false) {
-            $optionValues[$key]['class'] = lcfirst($optionClass);
-          }
+        if (strpos($optionValue['name'], 'native_') !== false) {
+          //  Get the same class as the user dashboard option base on value
+          $optionValues[$key]['class'] = CRM_Cdashtabs_Settings::getUserDashboardOptionsClass($optionValue['value']);
 
           //  Rewrite option value name for button label (user dashboard option)
           $optionValues[$key]['name'] = CRM_Cdashtabs_Settings::getTitleTypeSettings($optionValue['value'], $optionValueType);

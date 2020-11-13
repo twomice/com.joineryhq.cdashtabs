@@ -36,9 +36,9 @@ class CRM_Cdashtabs_Upgrader extends CRM_Cdashtabs_Upgrader_Base {
       // Copy user dashboard options to cdashtabs for tab order
       $newCdashtabsOption = civicrm_api3('OptionValue', 'create', [
         'option_group_id' => "cdashtabs",
-        'label' => "native_{$option['value']}",
+        'name' => "native_{$option['value']}",
         'value' => $option['value'],
-        'name' => $option['name'],
+        'label' => $option['name'],
         'filter' => $option['filter'],
         'weight' => $option['weight'],
         'is_optgroup' => $option['is_optgroup'],

@@ -94,8 +94,14 @@ class CRM_Cdashtabs_Settings {
     } elseif ($type === 'report') {
       // civicrm_report_instance (no api)
     } elseif ($type === 'native') {
+      $userDashboardOptionId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup',
+        'user_dashboard_options',
+        'id',
+        'name'
+      );
+
       $optionValues = \Civi\Api4\OptionValue::get()
-        ->addWhere('option_group_id', '=', 20)
+        ->addWhere('option_group_id', '=', $userDashboardOptionId)
         ->addWhere('value', '=', $id)
         ->setLimit(1)
         ->execute();
@@ -105,6 +111,33 @@ class CRM_Cdashtabs_Settings {
     }
 
     return $title;
+  }
+
+  public static function getUserDashboardOptionsClass($value) {
+    // Use api to get user dashboard options base on value and
+    // get the same class for hide/show of the tab
+    $class = '';
+    $userDashboardOptionId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup',
+      'user_dashboard_options',
+      'id',
+      'name'
+    );
+
+    $optionValues = \Civi\Api4\OptionValue::get()
+      ->addWhere('option_group_id', '=', $userDashboardOptionId)
+      ->addWhere('value', '=', $value)
+      ->setLimit(1)
+      ->execute();
+    foreach ($optionValues as $optionValue) {
+      $optionClass = str_replace(' ', '', $optionValue['name']);
+      $class = strtolower($optionClass);
+
+      if ($optionValue['name'] == trim($optionValue['name']) && strpos($optionValue['name'], ' ') !== false) {
+        $class = lcfirst($optionClass);
+      }
+    }
+
+    return $class;
   }
 
 }
