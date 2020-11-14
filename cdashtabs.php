@@ -273,13 +273,6 @@ function cdashtabs_civicrm_navigationMenu(&$menu) {
       'parent' => array('Administer', 'Customize Data and Screens'),
       'permission' => 'access CiviCRM',
     ),
-    'settings_page' => array(
-      'label'      => E::ts('Settings'),
-      'name'       => 'Settings',
-      'url'        => 'civicrm/admin/cdashtabs/settings?reset=1',
-      'parent'    => array('Administer', 'Customize Data and Screens', 'Contact Dashboard Tabs'),
-      'permission' => 'access CiviCRM',
-    ),
   );
 
   foreach ($pages as $item) {
