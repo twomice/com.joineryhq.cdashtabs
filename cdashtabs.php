@@ -397,7 +397,7 @@ function cdashtabs_civicrm_alterContent(&$content, $context, $tplName, &$object)
 /**
  * Log CiviCRM API errors to CiviCRM log.
  */
-function _cdashtabs_log_api_error(CiviCRM_API3_Exception $e, string $entity, string $action, array $params) {
+function _cdashtabs_log_api_error(API_Exception $e, string $entity, string $action, array $params) {
   $message = "CiviCRM API Error '{$entity}.{$action}': ". $e->getMessage() .'; ';
   $message .= "API parameters when this error happened: ". json_encode($params) .'; ';
   $bt = debug_backtrace();
@@ -413,7 +413,7 @@ function _cdashtabs_log_api_error(CiviCRM_API3_Exception $e, string $entity, str
 function _cdashtabs_civicrmapi(string $entity, string $action, array $params, bool $silence_errors = TRUE) {
   try {
     $result = civicrm_api3($entity, $action, $params);
-  } catch (CiviCRM_API3_Exception $e) {
+  } catch (API_Exception $e) {
     _cdashtabs_log_api_error($e, $entity, $action, $params);
     if (!$silence_errors) {
       throw $e;

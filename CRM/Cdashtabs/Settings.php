@@ -46,7 +46,7 @@ class CRM_Cdashtabs_Settings {
       civicrm_api3('optionValue', 'create', $createParams);
       return TRUE;
     }
-    catch (CiviCRM_API3_Exception $e) {
+    catch (API_Exception $e) {
       return FALSE;
     }
   }
