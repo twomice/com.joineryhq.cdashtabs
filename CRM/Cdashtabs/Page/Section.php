@@ -54,7 +54,7 @@ class CRM_Cdashtabs_Page_Section extends CRM_Core_Page {
     foreach ($optionValue as $key => $option) {
       $optionLabel = explode('_', $option['name']);
       $type = array_shift($optionLabel);
-      $optionValue[$key]['type'] = ($type === 'ufgroup' ? 'Profile' : ucfirst($type));
+      $optionValue[$key]['type'] = ($type === 'uf' ? 'Profile' : ucfirst($type));
     }
 
     $this->assign('action', $action);

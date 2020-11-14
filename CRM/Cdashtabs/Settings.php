@@ -39,8 +39,7 @@ class CRM_Cdashtabs_Settings {
     // to save new settings with a message like "value already exists in the database"
     // if the values for this ufGroup are the same as for some other ufGroup. So by
     // adding uf_group_id, we make it unique to this ufGroup.
-    $settingType = $type === 'ufgroup' ? 'uf_group' : $type;
-    $settings["{$settingType}_id"] = $id;
+    $settings["{$type}_id"] = $id;
     $createParams['value'] = json_encode($settings);
 
     try {
@@ -69,9 +68,8 @@ class CRM_Cdashtabs_Settings {
     foreach ($optionGroup['get_optionValue'] as $optionValue) {
       $optionSettingJson = $optionValue['value'] ?? '{}';
       $optionSettings = json_decode($optionSettingJson, TRUE);
-      $settingType = $type === 'ufgroup' ? 'uf_group' : $type;
       if (
-        $optionSettings["{$settingType}_id"]
+        $optionSettings["{$type}_id"]
         && ($isCdash === NULL || ($optionSettings['is_cdash'] ?? 0) == intval($isCdash))
       ) {
         $filteredSettings[] = $optionSettings;
@@ -82,7 +80,7 @@ class CRM_Cdashtabs_Settings {
 
   public static function getTitleTypeSettings($id, $type) {
     $title = '';
-    if ($type === 'ufgroup') {
+    if ($type === 'uf') {
       $uFGroups = \Civi\Api4\UFGroup::get()
         ->addWhere('id', '=', $id)
         ->setLimit(1)
