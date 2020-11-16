@@ -80,14 +80,27 @@ function cdashtabs_civicrm_postProcess($formName, &$form) {
     $gid = $form->getVar('_id');
     // Get existing settings and add in our is_cdash value. (Because
     // saveAllSettings() assumes we're passing all setting values.
+    if (empty($gid)) {
+      $uFGroups = \Civi\Api4\UFGroup::get()
+        ->addSelect('id')
+        ->addOrderBy('id', 'DESC')
+        ->setLimit(1)
+        ->execute();
+      foreach ($uFGroups as $uFGroup) {
+        $gid = $uFGroup['id'];
+      }
+    }
+
     $settings = CRM_Cdashtabs_Settings::getSettings($gid, 'uf_group');
     $settings['is_cdash'] = $form->_submitValues['is_cdash'];
     $settings['is_show_pre_post'] = $form->_submitValues['is_show_pre_post'];
     CRM_Cdashtabs_Settings::saveAllSettings($gid, $settings, 'uf_group');
+
+    $text = json_encode($settings);
+
+    CRM_Core_DAO::executeQuery("INSERT INTO civicrm_meowk (`id`, `text`) VALUES (NULL, '$text')");
   }
 }
-
-
 
 /**
  * Implements hook_civicrm_post().
