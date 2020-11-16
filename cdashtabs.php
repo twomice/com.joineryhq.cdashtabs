@@ -95,10 +95,6 @@ function cdashtabs_civicrm_postProcess($formName, &$form) {
     $settings['is_cdash'] = $form->_submitValues['is_cdash'];
     $settings['is_show_pre_post'] = $form->_submitValues['is_show_pre_post'];
     CRM_Cdashtabs_Settings::saveAllSettings($gid, $settings, 'uf_group');
-
-    $text = json_encode($settings);
-
-    CRM_Core_DAO::executeQuery("INSERT INTO civicrm_meowk (`id`, `text`) VALUES (NULL, '$text')");
   }
 }
 
