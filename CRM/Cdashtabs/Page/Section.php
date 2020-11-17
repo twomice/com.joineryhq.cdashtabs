@@ -54,7 +54,15 @@ class CRM_Cdashtabs_Page_Section extends CRM_Core_Page {
     foreach ($optionValue as $key => $option) {
       $optionLabel = explode('_', $option['name']);
       $type = array_shift($optionLabel);
+      $optionId = end($optionLabel);
       $optionValue[$key]['type'] = ($type === 'uf' ? 'Profile' : ucfirst($type));
+
+      if ($type == 'native') {
+        $nativeDetails = CRM_Cdashtabs_Settings::getUserDashboardOptionsDetails($optionId);
+        $optionValue[$key]['sectionId'] = $nativeDetails['sectionId'];
+      } else {
+        $optionValue[$key]['sectionId'] = $optionId;
+      }
     }
 
     $this->assign('action', $action);

@@ -329,7 +329,8 @@ function cdashtabs_civicrm_pageRun(&$page) {
           $optionValues[$key]['name'] = $optionValue['label'];
 
           //  Get the same class as the user dashboard option base on value
-          $optionValues[$key]['class'] = CRM_Cdashtabs_Settings::getUserDashboardOptionsClass($optionValue['value']);
+          $nativeDetails = CRM_Cdashtabs_Settings::getUserDashboardOptionsDetails($optionValue['value']);
+          $optionValues[$key]['class'] = $nativeDetails['class'];
         } else {
           //  Rewrite option value name for button label (ufgroup and report)
           $optionValues[$key]['name'] = CRM_Cdashtabs_Settings::getTitleTypeSettings($optionValueId, $optionValueType);
