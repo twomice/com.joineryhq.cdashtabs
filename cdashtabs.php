@@ -321,25 +321,28 @@ function cdashtabs_civicrm_pageRun(&$page) {
 
      foreach ($optionGroup['get_optionValue'] as $key => $optionValue) {
         $optionLabel = explode('_', $optionValue['name']);
-        $optionValueId = end($optionLabel);
-        $optionValues[$key]['class'] = $optionValueId;
         $optionValueType = array_shift($optionLabel);
+        $optionValueId = end($optionLabel);
+        $optionValueDecode = json_decode($optionValue['value']);
 
-        if (strpos($optionValue['name'], 'native_') !== false) {
+        if ($optionValueType != 'native' && empty($optionValueDecode->is_cdash)) {
+          continue;
+        }
+
+        $optionValues[$key]['class'] = $optionValueId;
+        $optionValues[$key]['name'] = $optionValue['label'];
+
+        if ($optionValueType == 'native') {
           $optionValues[$key]['name'] = $optionValue['label'];
 
           //  Get the same class as the user dashboard option base on value
           $nativeDetails = CRM_Cdashtabs_Settings::getUserDashboardOptionsDetails($optionValue['value']);
           $optionValues[$key]['class'] = $nativeDetails['class'];
-        } else {
-          //  Rewrite option value name for button label (ufgroup and report)
-          $optionValues[$key]['name'] = CRM_Cdashtabs_Settings::getTitleTypeSettings($optionValueId, $optionValueType);
         }
       }
 
       $cdashtabs['options'] = $optionValues;
       CRM_Core_Resources::singleton()->addVars('cdashtabs', $cdashtabs);
-
       CRM_Core_Resources::singleton()->addScriptFile('com.joineryhq.cdashtabs', 'js/cdashtabs.js', 100, 'page-footer');
       CRM_Core_Resources::singleton()->addStyleFile('com.joineryhq.cdashtabs', 'css/cdashtabs.css', 100, 'page-header');
     }

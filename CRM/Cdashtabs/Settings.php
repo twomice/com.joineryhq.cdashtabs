@@ -25,6 +25,9 @@ class CRM_Cdashtabs_Settings {
     ->addWhere('name', '=', $settingName)
     ->execute();
 
+    $details = self::getProfileReportDetails($id, $type);
+    $label = !empty($details['frontend_title']) ? $details['frontend_title'] : $details['title'];
+
     $createParams = array();
 
     if ($optionValueId = CRM_Utils_Array::value('id', $result)) {
@@ -33,6 +36,7 @@ class CRM_Cdashtabs_Settings {
     else {
       $createParams['name'] = $settingName;
       $createParams['option_group_id'] = "cdashtabs";
+      $createParams['label'] = $label;
     }
 
     // Add uf_group_id to settings. Without this, optionValue.create api was failing
@@ -78,27 +82,28 @@ class CRM_Cdashtabs_Settings {
     return $filteredSettings;
   }
 
-  public static function getTitleTypeSettings($id, $type) {
-    $title = '';
-    if ($type === 'uf') {
+  public static function getProfileReportDetails($id, $type) {
+    $details = [];
+    if ($type === 'uf' || $type === 'uf_group') {
       $uFGroups = \Civi\Api4\UFGroup::get()
         ->addWhere('id', '=', $id)
         ->setLimit(1)
         ->execute();
       foreach ($uFGroups as $uFGroup) {
-        $title = $uFGroup['title'];
+        $details['title'] = $uFGroup['title'];
+        $details['frontend_title'] = $uFGroup['frontend_title'];
       }
     } elseif ($type === 'report') {
       // civicrm_report_instance (no api)
     }
 
-    return $title;
+    return $details;
   }
 
   public static function getUserDashboardOptionsDetails($value) {
     // Use api to get user dashboard options base on value and
     // get the same class for hide/show of the tab
-    $return = [];
+    $details = [];
 
     $optionValues = \Civi\Api4\OptionValue::get()
       ->addWhere('option_group_id:name', '=', 'user_dashboard_options')
@@ -107,15 +112,15 @@ class CRM_Cdashtabs_Settings {
       ->execute();
     foreach ($optionValues as $optionValue) {
       $optionClass = str_replace(' ', '', $optionValue['name']);
-      $return['class'] = strtolower($optionClass);
-      $return['sectionId'] = $optionValue['label'];
+      $details['class'] = strtolower($optionClass);
+      $details['sectionId'] = $optionValue['label'];
 
       if ($optionValue['name'] == trim($optionValue['name']) && strpos($optionValue['name'], ' ') !== false) {
-        $return['class'] = lcfirst($optionClass);
+        $details['class'] = lcfirst($optionClass);
       }
     }
 
-    return $return;
+    return $details;
   }
 
 }
