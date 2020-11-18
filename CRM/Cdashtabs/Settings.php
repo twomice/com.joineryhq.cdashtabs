@@ -84,7 +84,7 @@ class CRM_Cdashtabs_Settings {
 
   public static function getProfileReportDetails($id, $type) {
     $details = [];
-    if ($type === 'uf' || $type === 'uf_group') {
+    if ($type === 'uf_group') {
       $uFGroups = \Civi\Api4\UFGroup::get()
         ->addWhere('id', '=', $id)
         ->setLimit(1)
