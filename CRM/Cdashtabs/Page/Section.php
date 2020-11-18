@@ -62,6 +62,7 @@ class CRM_Cdashtabs_Page_Section extends CRM_Core_Page {
         $optionValue[$key]['sectionId'] = $nativeDetails['sectionId'];
       } else {
         $optionValue[$key]['sectionId'] = $optionId;
+        $optionValue[$key]['label'] = CRM_Cdashtabs_Settings::getProfileTitle($optionId);
       }
     }
 

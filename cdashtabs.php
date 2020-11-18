@@ -330,7 +330,7 @@ function cdashtabs_civicrm_pageRun(&$page) {
         }
 
         $optionValues[$key]['class'] = $optionValueId;
-        $optionValues[$key]['name'] = $optionValue['label'];
+        $optionValues[$key]['name'] = CRM_Cdashtabs_Settings::getProfileTitle($optionValueId);
 
         if ($optionValueType == 'native') {
           $optionValues[$key]['name'] = $optionValue['label'];

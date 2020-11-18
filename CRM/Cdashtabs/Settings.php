@@ -25,9 +25,6 @@ class CRM_Cdashtabs_Settings {
     ->addWhere('name', '=', $settingName)
     ->execute();
 
-    $details = self::getProfileReportDetails($id, $type);
-    $label = !empty($details['frontend_title']) ? $details['frontend_title'] : $details['title'];
-
     $createParams = array();
 
     if ($optionValueId = CRM_Utils_Array::value('id', $result)) {
@@ -82,22 +79,17 @@ class CRM_Cdashtabs_Settings {
     return $filteredSettings;
   }
 
-  public static function getProfileReportDetails($id, $type) {
-    $details = [];
-    if ($type === 'uf_group') {
-      $uFGroups = \Civi\Api4\UFGroup::get()
-        ->addWhere('id', '=', $id)
-        ->setLimit(1)
-        ->execute();
-      foreach ($uFGroups as $uFGroup) {
-        $details['title'] = $uFGroup['title'];
-        $details['frontend_title'] = $uFGroup['frontend_title'];
-      }
-    } elseif ($type === 'report') {
-      // civicrm_report_instance (no api)
+  public static function getProfileTitle($id) {
+    $title = '';
+    $uFGroups = \Civi\Api4\UFGroup::get()
+      ->addWhere('id', '=', $id)
+      ->setLimit(1)
+      ->execute();
+    foreach ($uFGroups as $uFGroup) {
+      $title = !empty($uFGroup['frontend_title']) ? $uFGroup['frontend_title'] : $uFGroup['title'];
     }
 
-    return $details;
+    return $title;
   }
 
   public static function getUserDashboardOptionsDetails($value) {
