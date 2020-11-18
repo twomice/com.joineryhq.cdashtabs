@@ -83,7 +83,7 @@ function cdashtabs_civicrm_postProcess($formName, &$form) {
     if (empty($gid)) {
       $uFGroups = \Civi\Api4\UFGroup::get()
         ->addSelect('id')
-        ->addOrderBy('id', 'DESC')
+        ->addWhere('title', '=', $form->_submitValues['title'])
         ->setLimit(1)
         ->execute();
       foreach ($uFGroups as $uFGroup) {
