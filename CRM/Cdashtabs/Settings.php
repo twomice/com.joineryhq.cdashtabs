@@ -33,7 +33,6 @@ class CRM_Cdashtabs_Settings {
     else {
       $createParams['name'] = $settingName;
       $createParams['option_group_id'] = "cdashtabs";
-      $createParams['label'] = $label;
     }
 
     // Add uf_group_id to settings. Without this, optionValue.create api was failing
