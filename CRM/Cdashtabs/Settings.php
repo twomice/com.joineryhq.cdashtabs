@@ -23,7 +23,8 @@ class CRM_Cdashtabs_Settings {
     $result = \Civi\Api4\OptionValue::get()
     ->addWhere('option_group_id:name', '=', 'cdashtabs')
     ->addWhere('name', '=', $settingName)
-    ->execute();
+    ->execute()
+    ->first();
 
     $createParams = array();
 
