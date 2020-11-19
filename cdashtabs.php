@@ -81,14 +81,14 @@ function cdashtabs_civicrm_postProcess($formName, &$form) {
     // Get existing settings and add in our is_cdash value. (Because
     // saveAllSettings() assumes we're passing all setting values.
     if (empty($gid)) {
-      $uFGroups = \Civi\Api4\UFGroup::get()
+      $uFGroup = \Civi\Api4\UFGroup::get()
         ->addSelect('id')
         ->addWhere('title', '=', $form->_submitValues['title'])
-        ->setLimit(1)
-        ->execute();
-      foreach ($uFGroups as $uFGroup) {
-        $gid = $uFGroup['id'];
-      }
+        ->addOrderBy('id', 'DESC')
+        ->execute()
+        ->first();
+
+      $gid = $uFGroup['id'];
     }
 
     $settings = CRM_Cdashtabs_Settings::getSettings($gid, 'uf_group');
@@ -338,6 +338,17 @@ function cdashtabs_civicrm_pageRun(&$page) {
           //  Get the same class as the user dashboard option base on value
           $nativeDetails = CRM_Cdashtabs_Settings::getUserDashboardOptionsDetails($optionValue['value']);
           $optionValues[$key]['class'] = $nativeDetails['class'];
+        } else {
+          // Exclude from section if didn't exist in ufgroup profile
+          // since we can't remove it using cdashtabs_civicrm_post hook
+          $uFGroup = \Civi\Api4\UFGroup::get()
+            ->addWhere('id', '=', $optionValueId)
+            ->addOrderBy('id', 'DESC')
+            ->execute()
+            ->first();
+          if (!$uFGroup) {
+            unset($optionValues[$key]);
+          }
         }
       }
 

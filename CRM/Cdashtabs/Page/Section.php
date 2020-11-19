@@ -63,6 +63,17 @@ class CRM_Cdashtabs_Page_Section extends CRM_Core_Page {
       } else {
         $optionValue[$key]['sectionId'] = $optionId;
         $optionValue[$key]['label'] = CRM_Cdashtabs_Settings::getProfileTitle($optionId);
+
+        // Remove from section if didn't exist in ufgroup profile
+        // since we can't remove it using cdashtabs_civicrm_post hook
+        $uFGroup = \Civi\Api4\UFGroup::get()
+          ->addWhere('id', '=', $optionId)
+          ->addOrderBy('id', 'DESC')
+          ->execute()
+          ->first();
+        if (!$uFGroup) {
+          unset($optionValue[$key]);
+        }
       }
     }
 
