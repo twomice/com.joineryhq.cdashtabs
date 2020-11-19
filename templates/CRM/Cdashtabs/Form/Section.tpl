@@ -19,7 +19,8 @@
         {else}
           <tr class="crm-admin-options-form-block-label">
             <td class="label"><label>{ts}Label{/ts}</label></td>
-            <td class="html-adjust">{$optionDetails.label}</td>
+            <td class="html-adjust">{$optionDetails.label}<br />
+              <span class="description">{$optionDetails.labelDesc}</span></td>
           </tr>
           <tr class="crm-admin-options-form-block-is_cdash">
             <td class="label">{$form.is_cdash.label}</td>

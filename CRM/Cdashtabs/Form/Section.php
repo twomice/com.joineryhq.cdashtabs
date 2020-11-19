@@ -76,7 +76,8 @@ class CRM_Cdashtabs_Form_Section extends CRM_Core_Form {
       $optionDetails['sectionId'] = $this->_sectionId;
       $optionDetails['type'] = E::ts('Profile');
       $profileUrl = CRM_Utils_System::url('/civicrm/admin/uf/group/update', "action=update&id={$this->_sectionId}&context=group", true);
-      $optionDetails['label'] = E::ts("To edit the profile title, label please <a href='{$profileUrl}' target='_blank'>edit this profile Settings</a>.");
+      $optionDetails['label'] = CRM_Cdashtabs_Settings::getProfileTitle($this->_sectionId);
+      $optionDetails['labelDesc'] = E::ts("To edit the profile title, please <a href='{$profileUrl}'>edit this profile Settings</a>.");
 
       $this->add('checkbox',
         'is_cdash',
