@@ -9,9 +9,9 @@ class CRM_Cdashtabs_Settings {
   public static function getSettings($id, $type) {
     $settingName = "{$type}_settings_{$id}";
     $result = \Civi\Api4\OptionValue::get()
-    ->addWhere('option_group_id:name', '=', 'cdashtabs')
-    ->addWhere('name', '=', $settingName)
-    ->execute();
+      ->addWhere('option_group_id:name', '=', 'cdashtabs')
+      ->addWhere('name', '=', $settingName)
+      ->execute();
 
     $resultValue = CRM_Utils_Array::value(0, $result, array());
     $settingJson = CRM_Utils_Array::value('value', $resultValue, '{}');
@@ -21,10 +21,10 @@ class CRM_Cdashtabs_Settings {
   public static function saveAllSettings($id, $settings, $type) {
     $settingName = "{$type}_settings_{$id}";
     $result = \Civi\Api4\OptionValue::get()
-    ->addWhere('option_group_id:name', '=', 'cdashtabs')
-    ->addWhere('name', '=', $settingName)
-    ->execute()
-    ->first();
+      ->addWhere('option_group_id:name', '=', 'cdashtabs')
+      ->addWhere('name', '=', $settingName)
+      ->execute()
+      ->first();
 
     $createParams = array();
 
@@ -57,6 +57,7 @@ class CRM_Cdashtabs_Settings {
    *
    * @param Boolean $isCdash If given, filter only for settings-per-uf-group where
    *    the setting value is_cdash matches the given value.
+   * @param String $type
    *
    */
   public static function getFilteredSettings($isCdash = NULL, $type) {
@@ -107,7 +108,7 @@ class CRM_Cdashtabs_Settings {
       $details['class'] = strtolower($optionClass);
       $details['sectionId'] = $optionValue['label'];
 
-      if ($optionValue['name'] == trim($optionValue['name']) && strpos($optionValue['name'], ' ') !== false) {
+      if ($optionValue['name'] == trim($optionValue['name']) && strpos($optionValue['name'], ' ') !== FALSE) {
         $details['class'] = lcfirst($optionClass);
       }
     }

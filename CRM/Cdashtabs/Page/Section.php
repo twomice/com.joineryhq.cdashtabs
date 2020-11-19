@@ -60,7 +60,8 @@ class CRM_Cdashtabs_Page_Section extends CRM_Core_Page {
       if ($type == 'native') {
         $nativeDetails = CRM_Cdashtabs_Settings::getUserDashboardOptionsDetails($optionId);
         $optionValue[$key]['sectionId'] = $nativeDetails['sectionId'];
-      } else {
+      }
+      else {
         $optionValue[$key]['sectionId'] = $optionId;
         $optionValue[$key]['label'] = CRM_Cdashtabs_Settings::getProfileTitle($optionId);
 
@@ -90,7 +91,6 @@ class CRM_Cdashtabs_Page_Section extends CRM_Core_Page {
   /**
    * Get name of edit form.
    *
-   * @return string
    *   Classname of edit form.
    */
   public function edit($action) {

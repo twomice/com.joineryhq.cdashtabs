@@ -17,4 +17,4 @@ return array(
     'default' => 1,
     'html_type' => 'radio',
   ),
- );
+);

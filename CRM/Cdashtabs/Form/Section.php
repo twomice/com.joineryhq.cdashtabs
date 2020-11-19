@@ -40,7 +40,8 @@ class CRM_Cdashtabs_Form_Section extends CRM_Core_Form {
 
     if ($this->_type == 'native') {
       $defaults['label'] = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionValue', $this->_id, 'label');
-    } else {
+    }
+    else {
       $defaultValues = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionValue', $this->_id, 'value');
       foreach (json_decode($defaultValues) as $key => $value) {
         $defaults[$key] = !empty($value) ? 1 : 0;
@@ -72,10 +73,11 @@ class CRM_Cdashtabs_Form_Section extends CRM_Core_Form {
         'optionExists',
         ['CRM_Core_DAO_OptionValue', $this->_id, $this->_gid, 'label', FALSE]
       );
-    } else {
+    }
+    else {
       $optionDetails['sectionId'] = $this->_sectionId;
       $optionDetails['type'] = E::ts('Profile');
-      $profileUrl = CRM_Utils_System::url('/civicrm/admin/uf/group/update', "action=update&id={$this->_sectionId}&context=group", true);
+      $profileUrl = CRM_Utils_System::url('/civicrm/admin/uf/group/update', "action=update&id={$this->_sectionId}&context=group", TRUE);
       $optionDetails['label'] = CRM_Cdashtabs_Settings::getProfileTitle($this->_sectionId);
       $optionDetails['labelDesc'] = E::ts("To edit the profile title, please <a href='{$profileUrl}'>edit this profile Settings</a>.");
 
@@ -140,7 +142,8 @@ class CRM_Cdashtabs_Form_Section extends CRM_Core_Form {
 
     if ($this->_type === 'native') {
       $saveOptionValue['label'] = $params['label'];
-    } else {
+    }
+    else {
       if ($values->is_cdash !== $params['is_cdash']) {
         $values->is_cdash = $params['is_cdash'];
       }

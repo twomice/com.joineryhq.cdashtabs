@@ -8,7 +8,7 @@ CRM.$(function($){
   // Get tab button main element
   var cdashtabs = $('.cdashtabs');
 
-  for (i in CRM.vars.cdashtabs.options) {
+  for (var i in CRM.vars.cdashtabs.options) {
     // Append button with data-target and label
     cdashtabs.append('<button data-target="crm-dashboard-' + CRM.vars.cdashtabs.options[i].class + '">' + CRM.vars.cdashtabs.options[i].name + '</button>');
   }
