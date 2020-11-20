@@ -309,6 +309,8 @@ function cdashtabs_civicrm_pageRun(&$page) {
 
   if ($pageName == 'CRM_Contact_Page_View_UserDashBoard') {
     $useTabs = Civi::settings()->get('cdashtabs_use_tabs');
+    $nativeUserDashboardOptions = CRM_Utils_Array::explodePadded(Civi::settings()->get('user_dashboard_options'));
+
     CRM_Core_Resources::singleton()->addScriptFile('com.joineryhq.cdashtabs', 'js/cdashtabs-inject.js', 100, 'page-footer');
 
     if ($useTabs) {
@@ -327,8 +329,19 @@ function cdashtabs_civicrm_pageRun(&$page) {
         $optionValueId = end($optionLabel);
         $optionValueDecode = json_decode($optionValue['value']);
 
-        if ($optionValueType != 'native' && empty($optionValueDecode->is_cdash)) {
-          continue;
+        if ($optionValueType != 'native') {
+          if (empty($optionValueDecode->is_cdash)) {
+            // If it's not native, honor is_cdash setting by skipping this section.
+            continue;
+          }
+        }
+        else {
+          // If it's native, honor native user_dashboard_options setting by
+          // skipping this section if it's not configured for dashboard display.
+          $nativeId = $optionValue['value'];
+          if (!in_array($nativeId, $nativeUserDashboardOptions)) {
+            continue;
+          }
         }
 
         $optionValues[$key]['class'] = $optionValueId;
