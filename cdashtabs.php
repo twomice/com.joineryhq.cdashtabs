@@ -420,7 +420,7 @@ function cdashtabs_civicrm_alterContent(&$content, $context, $tplName, &$object)
 
         $tpl = CRM_Core_Smarty::singleton();
         $tpl->assign('profileName', $ufGroupClass);
-        $tpl->assign('profileTitle', $ufGroup['title']);
+        $tpl->assign('profileTitle', $groupTitle);
         $tpl->assign('profileContent', $profileContent);
         $cdashContent = $tpl->fetch('CRM/Cdashtabs/snippet/injectedProfile.tpl');
         $content .= $cdashContent;
