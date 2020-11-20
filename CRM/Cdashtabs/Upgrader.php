@@ -66,7 +66,7 @@ class CRM_Cdashtabs_Upgrader extends CRM_Cdashtabs_Upgrader_Base {
   /**
    * Example: Run an external SQL script when the module is uninstalled.
    */
-   public function uninstall() {
+  public function uninstall() {
     try {
       $optionGroups = \Civi\Api4\OptionGroup::get()
         ->addSelect('id')
