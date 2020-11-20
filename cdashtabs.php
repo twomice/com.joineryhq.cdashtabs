@@ -16,7 +16,7 @@ function cdashtabs_civicrm_buildForm($formName, &$form) {
 
   // For the Profile edit settings form, add our custom configuration field.
   if ($formName == 'CRM_UF_Form_Group') {
-    // Create new field.
+    // Create new fields.
     $form->addElement('checkbox', 'is_cdash', E::ts('Display on Contact Dashboard?'));
     $form->addElement('checkbox', 'is_show_pre_post', E::ts('Display pre- and post-help on Contact Dashboard?'));
 
@@ -40,31 +40,6 @@ function cdashtabs_civicrm_buildForm($formName, &$form) {
       $defaults = array(
         'is_cdash' => $settings['is_cdash'],
         'is_show_pre_post' => $settings['is_show_pre_post'],
-      );
-      $form->setDefaults($defaults);
-    }
-  }
-  elseif (strpos($formName, 'CRM_Report_Form_') !== FALSE) {
-    // Create new field for reports form page
-    $form->addElement('checkbox', 'is_cdash', E::ts('Display on Contact Dashboard?'));
-    // Assign bhfe fields to the template, so our new field has a place to live.
-    $tpl = CRM_Core_Smarty::singleton();
-    $bhfe = $tpl->get_template_vars('beginHookFormElements');
-    if (!$bhfe) {
-      $bhfe = array();
-    }
-    $bhfe[] = 'is_cdash';
-    $form->assign('beginHookFormElements', $bhfe);
-
-    // Add javascript that will relocate our field to a sensible place in the form.
-    CRM_Core_Resources::singleton()->addScriptFile('com.joineryhq.cdashtabs', 'js/CRM_Report_Form.js');
-
-    // Set defaults so our field has the right value.
-    $reportId = $form->getVar('_id');
-    if ($reportId) {
-      $settings = CRM_Cdashtabs_Settings::getSettings($reportId, 'report');
-      $defaults = array(
-        'is_cdash' => $settings['is_cdash'],
       );
       $form->setDefaults($defaults);
     }
@@ -96,28 +71,6 @@ function cdashtabs_civicrm_postProcess($formName, &$form) {
     $settings['is_cdash'] = $form->_submitValues['is_cdash'];
     $settings['is_show_pre_post'] = $form->_submitValues['is_show_pre_post'];
     CRM_Cdashtabs_Settings::saveAllSettings($gid, $settings, 'uf_group');
-  }
-}
-
-/**
- * Implements hook_civicrm_post().
- *
- * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_post
- */
-function cdashtabs_civicrm_post($op, $objectName, $objectId, &$objectRef) {
-  if ($op == 'edit' && $objectName == 'ReportInstance') {
-    $formValues = unserialize($objectRef->form_values);
-
-    if (empty($formValues)) {
-      return;
-    }
-
-    $isCdash = !empty($formValues['is_cdash']) ? 1 : 0;
-    // Get existing settings and add in our is_cdash value. (Because
-    // saveAllSettings() assumes we're passing all setting values.
-    $settings = CRM_Cdashtabs_Settings::getSettings($objectId, 'report');
-    $settings['is_cdash'] = $isCdash;
-    CRM_Cdashtabs_Settings::saveAllSettings($objectId, $settings, 'report');
   }
 }
 
