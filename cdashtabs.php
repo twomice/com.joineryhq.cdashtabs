@@ -55,7 +55,7 @@ function cdashtabs_civicrm_postProcess($formName, &$form) {
   if ($formName == 'CRM_UF_Form_Group') {
     $gid = $form->getVar('_id');
     // Get existing settings and add in our is_cdash value. (Because
-    // saveAllSettings() assumes we're passing all setting values.
+    // saveAllSettings() assumes we're passing all setting values.)
     if (empty($gid)) {
       $uFGroup = \Civi\Api4\UFGroup::get()
         ->addSelect('id')
@@ -245,6 +245,7 @@ function cdashtabs_civicrm_navigationMenu(&$menu) {
     $menu_items = array();
     CRM_Core_BAO_Navigation::retrieve($menu_item_search, $menu_items);
     if (empty($menu_items)) {
+      // Now we're sure it doesn't exist; add it to the menu.
       $path = implode('/', $item['parent']);
       unset($item['parent']);
       _cdashtabs_civix_insert_navigation_menu($menu, $path, $item);
