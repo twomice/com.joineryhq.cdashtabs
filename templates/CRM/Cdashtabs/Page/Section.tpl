@@ -7,6 +7,7 @@
    <tr>
       <th>{ts}Label{/ts}</th>
       <th>{ts}Type{/ts}</th>
+      <th>{ts}ID{/ts}</th>
       <th>{ts}Order{/ts}</th>
       <th></th>
     </tr>
@@ -18,6 +19,7 @@
         {$row.label}
       </td>
       <td class="nowrap crm-admin-options-type">{$row.type}</td>
+      <td class="nowrap crm-admin-options-order">{$row.sectionId}</td>
       <td class="nowrap crm-admin-options-order">{$row.weight}</td>
       <td>{$row.action|replace:'xx':$row.id}</td>
     </tr>

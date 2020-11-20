@@ -25,6 +25,11 @@ class CRM_Cdashtabs_Form_Section extends CRM_Core_Form {
     $this->_action = CRM_Utils_Request::retrieve('action', 'String',
       $this, FALSE, 'browse'
     );
+
+    $optionValueName = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionValue', $this->_id, 'name');
+    $optionLabel = explode('_', $optionValueName);
+    $this->_sectionId = end($optionLabel);
+    $this->_type = array_shift($optionLabel);
   }
 
   /**
@@ -33,48 +38,66 @@ class CRM_Cdashtabs_Form_Section extends CRM_Core_Form {
   public function setDefaultValues() {
     $defaults = parent::setDefaultValues();
 
-    $defaultValues = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionValue', $this->_id, 'value');
-
-    foreach (json_decode($defaultValues) as $key => $value) {
-      $defaults[$key] = !empty($value) ? 1 : 0;
+    if ($this->_type == 'native') {
+      $defaults['label'] = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionValue', $this->_id, 'label');
+    }
+    else {
+      $defaultValues = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionValue', $this->_id, 'value');
+      foreach (json_decode($defaultValues) as $key => $value) {
+        $defaults[$key] = !empty($value) ? 1 : 0;
+      }
+      $defaults['value'] = $defaultValues;
     }
 
-    $defaults['value'] = $defaultValues;
-    $defaults['label'] = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionValue', $this->_id, 'label');
     $defaults['weight'] = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionValue', $this->_id, 'weight');
 
     return $defaults;
   }
 
   public function buildQuickForm() {
-    $this->add('text',
-      'label',
-      ts('Label'),
-      CRM_Core_DAO::getAttribute('CRM_Core_DAO_OptionValue', 'label'),
-      TRUE
-    );
-    $this->addRule('label',
-      ts('This Label already exists in the database for this option group. Please select a different Label.'),
-      'optionExists',
-      ['CRM_Core_DAO_OptionValue', $this->_id, $this->_gid, 'label', FALSE]
-    );
+    $optionDetails = [];
+    if ($this->_type === 'native') {
+      $sectionId = CRM_Cdashtabs_Settings::getUserDashboardOptionsDetails($this->_sectionId);
+      $optionDetails['sectionId'] = $sectionId['sectionId'];
+      $optionDetails['type'] = ucfirst($this->_type);
 
-    $this->add('hidden',
-      'value',
-      ts('Value'),
-      CRM_Core_DAO::getAttribute('CRM_Core_DAO_OptionValue', 'value'),
-      TRUE
-    );
+      $this->add('text',
+        'label',
+        ts('Label'),
+        CRM_Core_DAO::getAttribute('CRM_Core_DAO_OptionValue', 'label'),
+        TRUE
+      );
 
-    $this->add('checkbox',
-      'is_cdash',
-      ts('Display on Contact Dashboard?')
-    );
+      $this->addRule('label',
+        ts('This Label already exists in the database for this option group. Please select a different Label.'),
+        'optionExists',
+        ['CRM_Core_DAO_OptionValue', $this->_id, $this->_gid, 'label', FALSE]
+      );
+    }
+    else {
+      $optionDetails['sectionId'] = $this->_sectionId;
+      $optionDetails['type'] = E::ts('Profile');
+      $profileUrl = CRM_Utils_System::url('/civicrm/admin/uf/group/update', "action=update&id={$this->_sectionId}&context=group", TRUE);
+      $optionDetails['label'] = CRM_Cdashtabs_Settings::getProfileTitle($this->_sectionId);
+      $optionDetails['labelDesc'] = E::ts("To edit the profile title, please <a href='{$profileUrl}'>edit this profile Settings</a>.");
 
-    $this->add('checkbox',
-      'is_show_pre_post',
-      ts('Display pre- and post-help on Contact Dashboard?')
-    );
+      $this->add('checkbox',
+        'is_cdash',
+        ts('Display on Contact Dashboard?')
+      );
+
+      $this->add('checkbox',
+        'is_show_pre_post',
+        ts('Display pre- and post-help on Contact Dashboard?')
+      );
+
+      $this->add('hidden',
+        'value',
+        ts('Value'),
+        CRM_Core_DAO::getAttribute('CRM_Core_DAO_OptionValue', 'value'),
+        TRUE
+      );
+    }
 
     $this->add('number',
       'weight',
@@ -97,6 +120,8 @@ class CRM_Cdashtabs_Form_Section extends CRM_Core_Form {
       ),
     ));
 
+    $this->assign('optionDetails', $optionDetails);
+
     parent::buildQuickForm();
   }
 
@@ -104,17 +129,9 @@ class CRM_Cdashtabs_Form_Section extends CRM_Core_Form {
     $params = $this->exportValues();
     $values = json_decode($params['value']);
 
-    if ($values->is_cdash !== $params['is_cdash']) {
-      $values->is_cdash = $params['is_cdash'];
-    }
-
-    if ($values->is_show_pre_post !== $params['is_show_pre_post']) {
-      $values->is_show_pre_post = $params['is_show_pre_post'];
-    }
-
     $saveOptionValue = [
-      'label' => $params['label'],
-      'value' => json_encode($values),
+      'label' => CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionValue', $this->_id, 'label'),
+      'value' => CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionValue', $this->_id, 'value'),
       'description' => '',
       'weight' => $params['weight'],
       'is_active' => '1',
@@ -122,6 +139,21 @@ class CRM_Cdashtabs_Form_Section extends CRM_Core_Form {
       'option_group_id' => $this->_gid,
       'id' => $this->_id,
     ];
+
+    if ($this->_type === 'native') {
+      $saveOptionValue['label'] = $params['label'];
+    }
+    else {
+      if ($values->is_cdash !== $params['is_cdash']) {
+        $values->is_cdash = $params['is_cdash'];
+      }
+
+      if ($values->is_show_pre_post !== $params['is_show_pre_post']) {
+        $values->is_show_pre_post = $params['is_show_pre_post'];
+      }
+
+      $saveOptionValue['value'] = json_encode($values);
+    }
 
     $optionValue = CRM_Core_OptionValue::addOptionValue($saveOptionValue, $this->_gName, $this->_action, $this->_id);
 

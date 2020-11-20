@@ -36,14 +36,15 @@ function cdashtabs_civicrm_buildForm($formName, &$form) {
     // Set defaults so our field has the right value.
     $gid = $form->getVar('_id');
     if ($gid) {
-      $settings = CRM_Cdashtabs_Settings::getSettings($gid, 'ufgroup');
+      $settings = CRM_Cdashtabs_Settings::getSettings($gid, 'uf_group');
       $defaults = array(
         'is_cdash' => $settings['is_cdash'],
         'is_show_pre_post' => $settings['is_show_pre_post'],
       );
       $form->setDefaults($defaults);
     }
-  } elseif (strpos($formName, 'CRM_Report_Form_') !== false) {
+  }
+  elseif (strpos($formName, 'CRM_Report_Form_') !== FALSE) {
     // Create new field for reports form page
     $form->addElement('checkbox', 'is_cdash', E::ts('Display on Contact Dashboard?'));
     // Assign bhfe fields to the template, so our new field has a place to live.
@@ -80,14 +81,23 @@ function cdashtabs_civicrm_postProcess($formName, &$form) {
     $gid = $form->getVar('_id');
     // Get existing settings and add in our is_cdash value. (Because
     // saveAllSettings() assumes we're passing all setting values.
-    $settings = CRM_Cdashtabs_Settings::getSettings($gid, 'ufgroup');
+    if (empty($gid)) {
+      $uFGroup = \Civi\Api4\UFGroup::get()
+        ->addSelect('id')
+        ->addWhere('title', '=', $form->_submitValues['title'])
+        ->addOrderBy('id', 'DESC')
+        ->execute()
+        ->first();
+
+      $gid = $uFGroup['id'];
+    }
+
+    $settings = CRM_Cdashtabs_Settings::getSettings($gid, 'uf_group');
     $settings['is_cdash'] = $form->_submitValues['is_cdash'];
     $settings['is_show_pre_post'] = $form->_submitValues['is_show_pre_post'];
-    CRM_Cdashtabs_Settings::saveAllSettings($gid, $settings, 'ufgroup');
+    CRM_Cdashtabs_Settings::saveAllSettings($gid, $settings, 'uf_group');
   }
 }
-
-
 
 /**
  * Implements hook_civicrm_post().
@@ -110,6 +120,7 @@ function cdashtabs_civicrm_post($op, $objectName, $objectId, &$objectRef) {
     CRM_Cdashtabs_Settings::saveAllSettings($objectId, $settings, 'report');
   }
 }
+
 /**
  * Implements hook_civicrm_config().
  *
@@ -273,13 +284,6 @@ function cdashtabs_civicrm_navigationMenu(&$menu) {
       'parent' => array('Administer', 'Customize Data and Screens'),
       'permission' => 'access CiviCRM',
     ),
-    'settings_page' => array(
-      'label'      => E::ts('Settings'),
-      'name'       => 'Settings',
-      'url'        => 'civicrm/admin/cdashtabs/settings?reset=1',
-      'parent'    => array('Administer', 'Customize Data and Screens', 'Contact Dashboard Tabs'),
-      'permission' => 'access CiviCRM',
-    ),
   );
 
   foreach ($pages as $item) {
@@ -309,34 +313,50 @@ function cdashtabs_civicrm_pageRun(&$page) {
 
     if ($useTabs) {
       $optionGroup = \Civi\Api4\OptionGroup::get()
-      ->addWhere('name', '=', 'cdashtabs')
-      ->addChain('get_optionValue', \Civi\Api4\OptionValue::get()
-      ->addWhere('option_group_id', '=', '$id')
-      ->addWhere('is_active', '=', TRUE)
-      ->addOrderBy('weight', 'ASC'))
-      ->execute()
-      ->first();
+        ->addWhere('name', '=', 'cdashtabs')
+        ->addChain('get_optionValue', \Civi\Api4\OptionValue::get()
+          ->addWhere('option_group_id', '=', '$id')
+          ->addWhere('is_active', '=', TRUE)
+          ->addOrderBy('weight', 'ASC'))
+        ->execute()
+        ->first();
 
-     foreach ($optionGroup['get_optionValue'] as $key => $optionValue) {
+      foreach ($optionGroup['get_optionValue'] as $key => $optionValue) {
         $optionLabel = explode('_', $optionValue['name']);
-        $optionValueId = end($optionLabel);
-        $optionValues[$key]['class'] = $optionValueId;
         $optionValueType = array_shift($optionLabel);
+        $optionValueId = end($optionLabel);
+        $optionValueDecode = json_decode($optionValue['value']);
 
-        if (strpos($optionValue['name'], 'native_') !== false) {
+        if ($optionValueType != 'native' && empty($optionValueDecode->is_cdash)) {
+          continue;
+        }
+
+        $optionValues[$key]['class'] = $optionValueId;
+        $optionValues[$key]['name'] = CRM_Cdashtabs_Settings::getProfileTitle($optionValueId);
+
+        if ($optionValueType == 'native') {
           $optionValues[$key]['name'] = $optionValue['label'];
 
           //  Get the same class as the user dashboard option base on value
-          $optionValues[$key]['class'] = CRM_Cdashtabs_Settings::getUserDashboardOptionsClass($optionValue['value']);
-        } else {
-          //  Rewrite option value name for button label (ufgroup and report)
-          $optionValues[$key]['name'] = CRM_Cdashtabs_Settings::getTitleTypeSettings($optionValueId, $optionValueType);
+          $nativeDetails = CRM_Cdashtabs_Settings::getUserDashboardOptionsDetails($optionValue['value']);
+          $optionValues[$key]['class'] = $nativeDetails['class'];
+        }
+        else {
+          // Exclude from section if didn't exist in ufgroup profile
+          // since we can't remove it using cdashtabs_civicrm_post hook
+          $uFGroup = \Civi\Api4\UFGroup::get()
+            ->addWhere('id', '=', $optionValueId)
+            ->addOrderBy('id', 'DESC')
+            ->execute()
+            ->first();
+          if (!$uFGroup) {
+            unset($optionValues[$key]);
+          }
         }
       }
 
       $cdashtabs['options'] = $optionValues;
       CRM_Core_Resources::singleton()->addVars('cdashtabs', $cdashtabs);
-
       CRM_Core_Resources::singleton()->addScriptFile('com.joineryhq.cdashtabs', 'js/cdashtabs.js', 100, 'page-footer');
       CRM_Core_Resources::singleton()->addStyleFile('com.joineryhq.cdashtabs', 'css/cdashtabs.css', 100, 'page-header');
     }
@@ -352,7 +372,7 @@ function cdashtabs_civicrm_alterContent(&$content, $context, $tplName, &$object)
   if ($context == 'page') {
     if ($object->getVar('_name') == 'CRM_Contact_Page_View_UserDashBoard') {
       // Get a list of settings-per-uf-group where is_cdash = TRUE.
-      $cdashProfileSettings = CRM_Cdashtabs_Settings::getFilteredSettings(TRUE, 'ufgroup');
+      $cdashProfileSettings = CRM_Cdashtabs_Settings::getFilteredSettings(TRUE, 'uf_group');
       $userContactId = NULL;
       if (!empty($cdashProfileSettings)) {
         // We need the current contact ID to display the profiles properly.
@@ -375,7 +395,7 @@ function cdashtabs_civicrm_alterContent(&$content, $context, $tplName, &$object)
           ->addWhere('id', '=', $ufId)
           ->execute()
           ->first();
-        if (!$ufGroup['is_active']){
+        if (!$ufGroup['is_active']) {
           // If profile is disabled, skip it.
           continue;
         }
@@ -404,9 +424,9 @@ function cdashtabs_civicrm_alterContent(&$content, $context, $tplName, &$object)
 /**
  * Log CiviCRM API errors to CiviCRM log.
  */
-function _cdashtabs_log_api_error(CiviCRM_API3_Exception $e, string $entity, string $action, array $params) {
-  $message = "CiviCRM API Error '{$entity}.{$action}': ". $e->getMessage() .'; ';
-  $message .= "API parameters when this error happened: ". json_encode($params) .'; ';
+function _cdashtabs_log_api_error(API_Exception $e, string $entity, string $action, array $params) {
+  $message = "CiviCRM API Error '{$entity}.{$action}': " . $e->getMessage() . '; ';
+  $message .= "API parameters when this error happened: " . json_encode($params) . '; ';
   $bt = debug_backtrace();
   $error_location = "{$bt[1]['file']}::{$bt[1]['line']}";
   $message .= "Error API called from: $error_location";
@@ -420,7 +440,8 @@ function _cdashtabs_log_api_error(CiviCRM_API3_Exception $e, string $entity, str
 function _cdashtabs_civicrmapi(string $entity, string $action, array $params, bool $silence_errors = TRUE) {
   try {
     $result = civicrm_api3($entity, $action, $params);
-  } catch (CiviCRM_API3_Exception $e) {
+  }
+  catch (API_Exception $e) {
     _cdashtabs_log_api_error($e, $entity, $action, $params);
     if (!$silence_errors) {
       throw $e;

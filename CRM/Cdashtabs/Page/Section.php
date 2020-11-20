@@ -54,7 +54,28 @@ class CRM_Cdashtabs_Page_Section extends CRM_Core_Page {
     foreach ($optionValue as $key => $option) {
       $optionLabel = explode('_', $option['name']);
       $type = array_shift($optionLabel);
-      $optionValue[$key]['type'] = ($type === 'ufgroup' ? 'Profile' : ucfirst($type));
+      $optionId = end($optionLabel);
+      $optionValue[$key]['type'] = ($type === 'uf' ? 'Profile' : ucfirst($type));
+
+      if ($type == 'native') {
+        $nativeDetails = CRM_Cdashtabs_Settings::getUserDashboardOptionsDetails($optionId);
+        $optionValue[$key]['sectionId'] = $nativeDetails['sectionId'];
+      }
+      else {
+        $optionValue[$key]['sectionId'] = $optionId;
+        $optionValue[$key]['label'] = CRM_Cdashtabs_Settings::getProfileTitle($optionId);
+
+        // Remove from section if didn't exist in ufgroup profile
+        // since we can't remove it using cdashtabs_civicrm_post hook
+        $uFGroup = \Civi\Api4\UFGroup::get()
+          ->addWhere('id', '=', $optionId)
+          ->addOrderBy('id', 'DESC')
+          ->execute()
+          ->first();
+        if (!$uFGroup) {
+          unset($optionValue[$key]);
+        }
+      }
     }
 
     $this->assign('action', $action);
@@ -70,7 +91,6 @@ class CRM_Cdashtabs_Page_Section extends CRM_Core_Page {
   /**
    * Get name of edit form.
    *
-   * @return string
    *   Classname of edit form.
    */
   public function edit($action) {

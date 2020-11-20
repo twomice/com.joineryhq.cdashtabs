@@ -9,9 +9,9 @@ class CRM_Cdashtabs_Settings {
   public static function getSettings($id, $type) {
     $settingName = "{$type}_settings_{$id}";
     $result = \Civi\Api4\OptionValue::get()
-    ->addWhere('option_group_id:name', '=', 'cdashtabs')
-    ->addWhere('name', '=', $settingName)
-    ->execute();
+      ->addWhere('option_group_id:name', '=', 'cdashtabs')
+      ->addWhere('name', '=', $settingName)
+      ->execute();
 
     $resultValue = CRM_Utils_Array::value(0, $result, array());
     $settingJson = CRM_Utils_Array::value('value', $resultValue, '{}');
@@ -21,9 +21,10 @@ class CRM_Cdashtabs_Settings {
   public static function saveAllSettings($id, $settings, $type) {
     $settingName = "{$type}_settings_{$id}";
     $result = \Civi\Api4\OptionValue::get()
-    ->addWhere('option_group_id:name', '=', 'cdashtabs')
-    ->addWhere('name', '=', $settingName)
-    ->execute();
+      ->addWhere('option_group_id:name', '=', 'cdashtabs')
+      ->addWhere('name', '=', $settingName)
+      ->execute()
+      ->first();
 
     $createParams = array();
 
@@ -39,15 +40,14 @@ class CRM_Cdashtabs_Settings {
     // to save new settings with a message like "value already exists in the database"
     // if the values for this ufGroup are the same as for some other ufGroup. So by
     // adding uf_group_id, we make it unique to this ufGroup.
-    $settingType = $type === 'ufgroup' ? 'uf_group' : $type;
-    $settings["{$settingType}_id"] = $id;
+    $settings["{$type}_id"] = $id;
     $createParams['value'] = json_encode($settings);
 
     try {
       civicrm_api3('optionValue', 'create', $createParams);
       return TRUE;
     }
-    catch (CiviCRM_API3_Exception $e) {
+    catch (API_Exception $e) {
       return FALSE;
     }
   }
@@ -57,6 +57,7 @@ class CRM_Cdashtabs_Settings {
    *
    * @param Boolean $isCdash If given, filter only for settings-per-uf-group where
    *    the setting value is_cdash matches the given value.
+   * @param String $type
    *
    */
   public static function getFilteredSettings($isCdash = NULL, $type) {
@@ -69,9 +70,8 @@ class CRM_Cdashtabs_Settings {
     foreach ($optionGroup['get_optionValue'] as $optionValue) {
       $optionSettingJson = $optionValue['value'] ?? '{}';
       $optionSettings = json_decode($optionSettingJson, TRUE);
-      $settingType = $type === 'ufgroup' ? 'uf_group' : $type;
       if (
-        $optionSettings["{$settingType}_id"]
+        $optionSettings["{$type}_id"]
         && ($isCdash === NULL || ($optionSettings['is_cdash'] ?? 0) == intval($isCdash))
       ) {
         $filteredSettings[] = $optionSettings;
@@ -80,48 +80,40 @@ class CRM_Cdashtabs_Settings {
     return $filteredSettings;
   }
 
-  public static function getTitleTypeSettings($id, $type) {
+  public static function getProfileTitle($id) {
     $title = '';
-    if ($type === 'ufgroup') {
-      $uFGroups = \Civi\Api4\UFGroup::get()
-        ->addWhere('id', '=', $id)
-        ->setLimit(1)
-        ->execute();
-      foreach ($uFGroups as $uFGroup) {
-        $title = $uFGroup['title'];
-      }
-    } elseif ($type === 'report') {
-      // civicrm_report_instance (no api)
+    $uFGroups = \Civi\Api4\UFGroup::get()
+      ->addWhere('id', '=', $id)
+      ->setLimit(1)
+      ->execute();
+    foreach ($uFGroups as $uFGroup) {
+      $title = !empty($uFGroup['frontend_title']) ? $uFGroup['frontend_title'] : $uFGroup['title'];
     }
 
     return $title;
   }
 
-  public static function getUserDashboardOptionsClass($value) {
+  public static function getUserDashboardOptionsDetails($value) {
     // Use api to get user dashboard options base on value and
     // get the same class for hide/show of the tab
-    $class = '';
-    $userDashboardOptionId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionGroup',
-      'user_dashboard_options',
-      'id',
-      'name'
-    );
+    $details = [];
 
     $optionValues = \Civi\Api4\OptionValue::get()
-      ->addWhere('option_group_id', '=', $userDashboardOptionId)
+      ->addWhere('option_group_id:name', '=', 'user_dashboard_options')
       ->addWhere('value', '=', $value)
       ->setLimit(1)
       ->execute();
     foreach ($optionValues as $optionValue) {
       $optionClass = str_replace(' ', '', $optionValue['name']);
-      $class = strtolower($optionClass);
+      $details['class'] = strtolower($optionClass);
+      $details['sectionId'] = $optionValue['label'];
 
-      if ($optionValue['name'] == trim($optionValue['name']) && strpos($optionValue['name'], ' ') !== false) {
-        $class = lcfirst($optionClass);
+      if ($optionValue['name'] == trim($optionValue['name']) && strpos($optionValue['name'], ' ') !== FALSE) {
+        $details['class'] = lcfirst($optionClass);
       }
     }
 
-    return $class;
+    return $details;
   }
 
 }
