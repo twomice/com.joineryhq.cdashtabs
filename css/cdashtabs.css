@@ -2,13 +2,13 @@ table.dashboard-elements > tbody > tr {
   display: none;
 }
 
-.cdashtabs button {
+#cdashtabsButtons button {
   padding: 10px;
   cursor: pointer;
   margin: 5px;
   border: 1px solid #000;
 }
 
-.cdashtabs button.is-active {
+#cdashtabsButtons button.cdashtabs-is-active {
   background-color: #fff;
 }

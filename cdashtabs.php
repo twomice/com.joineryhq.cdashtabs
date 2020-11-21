@@ -263,12 +263,15 @@ function cdashtabs_civicrm_pageRun(&$page) {
 
   if ($pageName == 'CRM_Contact_Page_View_UserDashBoard') {
     $useTabs = Civi::settings()->get('cdashtabs_use_tabs');
-    $nativeUserDashboardOptions = CRM_Utils_Array::explodePadded(Civi::settings()->get('user_dashboard_options'));
-
     CRM_Core_Resources::singleton()->addScriptFile('com.joineryhq.cdashtabs', 'js/cdashtabs-inject.js', 100, 'page-footer');
 
     if ($useTabs) {
-      $optionGroup = \Civi\Api4\OptionGroup::get()
+      // Array of buttons to pass to javascript.
+      $tabButtons = [];
+
+      // Find out which native sections are enabled for dashboard display.
+      $nativeUserDashboardOptions = CRM_Utils_Array::explodePadded(Civi::settings()->get('user_dashboard_options'));
+      $cdashtabsOptionGroup = \Civi\Api4\OptionGroup::get()
         ->addWhere('name', '=', 'cdashtabs')
         ->addChain('get_optionValue', \Civi\Api4\OptionValue::get()
           ->addWhere('option_group_id', '=', '$id')
@@ -277,53 +280,50 @@ function cdashtabs_civicrm_pageRun(&$page) {
         ->execute()
         ->first();
 
-      foreach ($optionGroup['get_optionValue'] as $key => $optionValue) {
-        $optionLabel = explode('_', $optionValue['name']);
-        $optionValueType = array_shift($optionLabel);
-        $optionValueId = end($optionLabel);
-        $optionValueDecode = json_decode($optionValue['value']);
+      foreach ($cdashtabsOptionGroup['get_optionValue'] as $key => $cdashtabsOptionValue) {
+        $optionNameParts = explode('_', $cdashtabsOptionValue['name']);
+        $optionValueId = array_pop($optionNameParts);
+        $optionValueType = implode('_', $optionNameParts);
+        $optionValueSettings = json_decode($cdashtabsOptionValue['value']);
 
-        if ($optionValueType != 'native') {
-          if (empty($optionValueDecode->is_cdash)) {
+        if ($optionValueType == 'native') {
+          // If it's native, honor native user_dashboard_options setting by
+          // skipping this section if it's not configured for dashboard display.
+          if (!in_array($optionValueId, $nativeUserDashboardOptions)) {
+            continue;
+          }
+
+          $tabButtons[$key]['tabLabel'] = $cdashtabsOptionValue['label'];
+
+          //  Get the same class as the user dashboard option base on value
+          $nativeDetails = CRM_Cdashtabs_Settings::getUserDashboardOptionsDetails($cdashtabsOptionValue['value']);
+          $tabButtons[$key]['class'] = $nativeDetails['class'];
+        }
+        else {
+          if (empty($optionValueSettings->is_cdash)) {
             // If it's not native, honor is_cdash setting by skipping this section.
             continue;
           }
-        }
-        else {
-          // If it's native, honor native user_dashboard_options setting by
-          // skipping this section if it's not configured for dashboard display.
-          $nativeId = $optionValue['value'];
-          if (!in_array($nativeId, $nativeUserDashboardOptions)) {
-            continue;
-          }
-        }
+          $tabButtons[$key]['tabLabel'] = CRM_Cdashtabs_Settings::getProfileTitle($optionValueId);
+          $tabButtons[$key]['class'] = $optionValueId;
 
-        $optionValues[$key]['class'] = $optionValueId;
-        $optionValues[$key]['name'] = CRM_Cdashtabs_Settings::getProfileTitle($optionValueId);
-
-        if ($optionValueType == 'native') {
-          $optionValues[$key]['name'] = $optionValue['label'];
-
-          //  Get the same class as the user dashboard option base on value
-          $nativeDetails = CRM_Cdashtabs_Settings::getUserDashboardOptionsDetails($optionValue['value']);
-          $optionValues[$key]['class'] = $nativeDetails['class'];
-        }
-        else {
-          // Exclude from section if didn't exist in ufgroup profile
-          // since we can't remove it using cdashtabs_civicrm_post hook
+          // Exclude from buttons if profile no longer exists (because deleting a
+          // profile will not remove the corresponding cdashtabs optionValue.)
           $uFGroup = \Civi\Api4\UFGroup::get()
             ->addWhere('id', '=', $optionValueId)
             ->addOrderBy('id', 'DESC')
             ->execute()
             ->first();
           if (!$uFGroup) {
-            unset($optionValues[$key]);
+            unset($tabButtons[$key]);
           }
         }
       }
 
-      $cdashtabs['options'] = $optionValues;
-      CRM_Core_Resources::singleton()->addVars('cdashtabs', $cdashtabs);
+      $jsVars = [
+        'tabButtons' => $tabButtons,
+      ];
+      CRM_Core_Resources::singleton()->addVars('cdashtabs', $jsVars);
       CRM_Core_Resources::singleton()->addScriptFile('com.joineryhq.cdashtabs', 'js/cdashtabs.js', 100, 'page-footer');
       CRM_Core_Resources::singleton()->addStyleFile('com.joineryhq.cdashtabs', 'css/cdashtabs.css', 100, 'page-header');
     }
@@ -336,54 +336,52 @@ function cdashtabs_civicrm_pageRun(&$page) {
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_alterContent
  */
 function cdashtabs_civicrm_alterContent(&$content, $context, $tplName, &$object) {
-  if ($context == 'page') {
-    if ($object->getVar('_name') == 'CRM_Contact_Page_View_UserDashBoard') {
-      // Get a list of settings-per-uf-group where is_cdash = TRUE.
-      $cdashProfileSettings = CRM_Cdashtabs_Settings::getFilteredSettings(TRUE, 'uf_group');
-      $userContactId = NULL;
-      if (!empty($cdashProfileSettings)) {
-        // We need the current contact ID to display the profiles properly.
-        $userContactId = $object->_contactId;
+  if ($context == 'page' && ($object->getVar('_name') == 'CRM_Contact_Page_View_UserDashBoard')) {
+    // Get a list of settings-per-uf-group where is_cdash = TRUE.
+    $cdashProfileSettings = CRM_Cdashtabs_Settings::getFilteredSettings(TRUE, 'uf_group');
+    $userContactId = NULL;
+    if (!empty($cdashProfileSettings)) {
+      // We need the current contact ID to display the profiles properly.
+      $userContactId = $object->_contactId;
+    }
+
+    if (!$userContactId) {
+      // If there's no know contact id, we can't display profiles, so return.
+      return;
+    }
+    // Calls to profile page->run() below will change the page title, and
+    // there's not much we can do about that. Store the current page title
+    // here so we can change it back afterward.
+    $originalTitle = CRM_Utils_System::$title;
+
+    // For each of those settings-groups, process the given uf-group for display.
+    foreach ($cdashProfileSettings as $cdashProfileSetting) {
+      $ufId = $cdashProfileSetting['uf_group_id'];
+      $ufGroup = \Civi\Api4\UFGroup::get()
+        ->addWhere('id', '=', $ufId)
+        ->execute()
+        ->first();
+      if (!$ufGroup['is_active']) {
+        // If profile is disabled, skip it.
+        continue;
       }
 
-      if (!$userContactId) {
-        // If there's no know contact id, we can't display profiles, so return.
-        return;
-      }
-      // Calls to profile page->run() below will change the page title, and
-      // there's not much we can do about that. Store the current page title
-      // here so we can change it back afterward.
-      $originalTitle = CRM_Utils_System::$title;
+      $groupTitle = $ufGroup['frontend_title'] ?? $ufGroup['title'];
+      $page = new CRM_Profile_Page_Dynamic($userContactId, $ufId, NULL, TRUE);
+      $profileContent = $page->run();
+      $ufGroupClass = strtolower(str_replace(' ', '-', $ufGroup['id']));
 
-      // For each of those settings-groups, process the given uf-group for display.
-      foreach ($cdashProfileSettings as $cdashProfileSetting) {
-        $ufId = $cdashProfileSetting['uf_group_id'];
-        $ufGroup = \Civi\Api4\UFGroup::get()
-          ->addWhere('id', '=', $ufId)
-          ->execute()
-          ->first();
-        if (!$ufGroup['is_active']) {
-          // If profile is disabled, skip it.
-          continue;
-        }
+      $tpl = CRM_Core_Smarty::singleton();
+      $tpl->assign('profileName', $ufGroupClass);
+      $tpl->assign('profileTitle', $groupTitle);
+      $tpl->assign('profileContent', $profileContent);
+      $cdashContent = $tpl->fetch('CRM/Cdashtabs/snippet/injectedProfile.tpl');
+      $content .= $cdashContent;
+    }
 
-        $groupTitle = $ufGroup['frontend_title'] ?? $ufGroup['title'];
-        $page = new CRM_Profile_Page_Dynamic($userContactId, $ufId, NULL, TRUE);
-        $profileContent = $page->run();
-        $ufGroupClass = strtolower(str_replace(' ', '-', $ufGroup['id']));
-
-        $tpl = CRM_Core_Smarty::singleton();
-        $tpl->assign('profileName', $ufGroupClass);
-        $tpl->assign('profileTitle', $groupTitle);
-        $tpl->assign('profileContent', $profileContent);
-        $cdashContent = $tpl->fetch('CRM/Cdashtabs/snippet/injectedProfile.tpl');
-        $content .= $cdashContent;
-      }
-
-      // Re-set the page title to original; it probably was chagned above.
-      if (isset($originalTitle)) {
-        CRM_Utils_System::setTitle($originalTitle);
-      }
+    // Re-set the page title to original; it probably was chagned above.
+    if (isset($originalTitle)) {
+      CRM_Utils_System::setTitle($originalTitle);
     }
   }
 }

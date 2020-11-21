@@ -3,26 +3,26 @@ CRM.$(function($){
   var mainTable = $('table.dashboard-elements');
 
   // Create tab button main element
-  mainTable.before('<div class="cdashtabs"></div>');
+  mainTable.before('<div id="cdashtabsButtons"></div>');
 
   // Get tab button main element
-  var cdashtabs = $('.cdashtabs');
+  var cdashtabsButtonsDiv = $('#cdashtabsButtons');
 
-  for (var i in CRM.vars.cdashtabs.options) {
+  for (var i in CRM.vars.cdashtabs.tabButtons) {
     // Append button with data-target and label
-    cdashtabs.append('<button data-target="crm-dashboard-' + CRM.vars.cdashtabs.options[i].class + '">' + CRM.vars.cdashtabs.options[i].name + '</button>');
+    cdashtabsButtonsDiv.append('<button data-target="crm-dashboard-' + CRM.vars.cdashtabs.tabButtons[i].class + '">' + CRM.vars.cdashtabs.tabButtons[i].tabLabel + '</button>');
   }
 
   // Add button show/hide row functionality when clicked
-  $(document).on('click', '.cdashtabs button', function(e) {
+  $(document).on('click', '#cdashtabsButtons button', function(e) {
     e.preventDefault();
-    var showTr = $(this).data('target');
+    var sectionTr = $(this).data('target');
     mainTable.children('tbody').children('tr').hide();
-    mainTable.find('.' + showTr).show();
-    cdashtabs.find('button').removeClass('is-active');
-    $(this).addClass('is-active');
+    mainTable.find('.' + sectionTr).show();
+    cdashtabsButtonsDiv.find('button').removeClass('cdashtabs-is-active');
+    $(this).addClass('cdashtabs-is-active');
   });
 
   // Show first row element
-  cdashtabs.find('button:first-child').trigger('click');
+  cdashtabsButtonsDiv.find('button:first-child').trigger('click');
 });

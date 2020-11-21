@@ -7,7 +7,7 @@
 class CRM_Cdashtabs_Settings {
 
   public static function getSettings($id, $type) {
-    $settingName = "{$type}_settings_{$id}";
+    $settingName = "{$type}_{$id}";
     $result = \Civi\Api4\OptionValue::get()
       ->addWhere('option_group_id:name', '=', 'cdashtabs')
       ->addWhere('name', '=', $settingName)
@@ -19,7 +19,7 @@ class CRM_Cdashtabs_Settings {
   }
 
   public static function saveAllSettings($id, $settings, $type) {
-    $settingName = "{$type}_settings_{$id}";
+    $settingName = "{$type}_{$id}";
     $result = \Civi\Api4\OptionValue::get()
       ->addWhere('option_group_id:name', '=', 'cdashtabs')
       ->addWhere('name', '=', $settingName)
