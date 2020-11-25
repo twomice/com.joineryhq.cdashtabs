@@ -30,8 +30,6 @@ class CRM_Cdashtabs_Upgrader extends CRM_Cdashtabs_Upgrader_Base {
       ->execute();
 
     foreach ($nativeUserDashboardOptions as $option) {
-      // Disable Assigned Activities
-      $optionActive = $option['value'] == 9 ? 0 : $option['is_active'];
       // Copy user dashboard options to cdashtabs for tab order
       $newCdashtabsOption = \Civi\Api4\OptionValue::create()
         ->setCheckPermissions(FALSE)
@@ -43,7 +41,7 @@ class CRM_Cdashtabs_Upgrader extends CRM_Cdashtabs_Upgrader_Base {
         ->addValue('weight', $option['weight'])
         ->addValue('is_optgroup', $option['is_optgroup'])
         ->addValue('is_reserved', $option['is_reserved'])
-        ->addValue('is_active', $optionActive)
+        ->addValue('is_active', $option['is_active'])
         ->execute();
     }
   }

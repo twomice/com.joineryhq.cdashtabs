@@ -50,6 +50,7 @@ class CRM_Cdashtabs_Page_Section extends CRM_Core_Page {
     CRM_Utils_Weight::addOrder($optionValue, 'CRM_Core_DAO_OptionValue',
       'id', $returnURL, NULL
     );
+    $nativeUserDashboardOptions = CRM_Utils_Array::explodePadded(Civi::settings()->get('user_dashboard_options'));
 
     foreach ($optionValue as $key => $option) {
       $optionLabel = explode('_', $option['name']);
@@ -60,6 +61,10 @@ class CRM_Cdashtabs_Page_Section extends CRM_Core_Page {
       if ($type == 'native') {
         $nativeDetails = CRM_Cdashtabs_Settings::getUserDashboardOptionsDetails($optionId);
         $optionValue[$key]['sectionId'] = $nativeDetails['sectionId'];
+
+        if (!in_array($optionId, $nativeUserDashboardOptions)) {
+          unset($optionValue[$key]);
+        }
       }
       else {
         $optionValue[$key]['sectionId'] = $optionId;
