@@ -29,6 +29,7 @@ class CRM_Cdashtabs_Upgrader extends CRM_Cdashtabs_Upgrader_Base {
       ->addOrderBy('weight', 'ASC')
       ->execute();
 
+    $weight = 1;
     foreach ($nativeUserDashboardOptions as $option) {
       // Copy user dashboard options to cdashtabs for tab order
       $newCdashtabsOption = \Civi\Api4\OptionValue::create()
@@ -38,7 +39,7 @@ class CRM_Cdashtabs_Upgrader extends CRM_Cdashtabs_Upgrader_Base {
         ->addValue('value', $option['value'])
         ->addValue('name', "native_{$option['value']}")
         ->addValue('filter', $option['filter'])
-        ->addValue('weight', $option['weight'])
+        ->addValue('weight', $weight++)
         ->addValue('is_optgroup', $option['is_optgroup'])
         ->addValue('is_reserved', $option['is_reserved'])
         ->addValue('is_active', 1)
