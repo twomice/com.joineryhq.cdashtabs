@@ -41,7 +41,7 @@ class CRM_Cdashtabs_Upgrader extends CRM_Cdashtabs_Upgrader_Base {
         ->addValue('weight', $option['weight'])
         ->addValue('is_optgroup', $option['is_optgroup'])
         ->addValue('is_reserved', $option['is_reserved'])
-        ->addValue('is_active', $option['is_active'])
+        ->addValue('is_active', 1)
         ->execute();
     }
   }
