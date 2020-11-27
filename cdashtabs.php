@@ -375,6 +375,9 @@ function cdashtabs_civicrm_alterContent(&$content, $context, $tplName, &$object)
       $tpl->assign('profileName', $ufGroupClass);
       $tpl->assign('profileTitle', $groupTitle);
       $tpl->assign('profileContent', $profileContent);
+      $tpl->assign('is_show_pre_post', $cdashProfileSetting['is_show_pre_post']);
+      $tpl->assign('help_pre', $ufGroup['help_pre']);
+      $tpl->assign('help_post', $ufGroup['help_post']);
       $cdashContent = $tpl->fetch('CRM/Cdashtabs/snippet/injectedProfile.tpl');
       $content .= $cdashContent;
     }

@@ -5,9 +5,19 @@
         <tr class='crm-dashboard-{$profileName}'>
           <td>
             <div class='header-dark'>{$profileTitle}</div>
+            {if $is_show_pre_post}
+              <div class="messages help">
+                {$help_pre}
+              </div>
+            {/if}
             <div class='view-content'>
               <div class='crm-profile-name-{$profileName}'>{$profileContent}</div>
             </div>
+            {if $is_show_pre_post}
+              <div class="messages help">
+                {$help_post}
+              </div>
+            {/if}
           </td>
         </tr>
       </tbody>
