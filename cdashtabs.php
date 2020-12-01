@@ -262,6 +262,7 @@ function cdashtabs_civicrm_pageRun(&$page) {
   $pageName = $page->getVar('_name');
 
   if ($pageName == 'CRM_Contact_Page_View_UserDashBoard') {
+    // See also cdashtabs_civicrm_alterContent(), which acts on the same page.
     $useTabs = Civi::settings()->get('cdashtabs_use_tabs');
     CRM_Core_Resources::singleton()->addScriptFile('com.joineryhq.cdashtabs', 'js/cdashtabs-inject.js', 100, 'page-footer');
 
@@ -337,6 +338,8 @@ function cdashtabs_civicrm_pageRun(&$page) {
  */
 function cdashtabs_civicrm_alterContent(&$content, $context, $tplName, &$object) {
   if ($context == 'page' && ($object->getVar('_name') == 'CRM_Contact_Page_View_UserDashBoard')) {
+    // See also cdashtabs_civicrm_pageRun(), which acts on the same page.
+
     // Get a list of settings-per-uf-group where is_cdash = TRUE.
     $cdashProfileSettings = CRM_Cdashtabs_Settings::getFilteredSettings(TRUE, 'uf_group');
     $userContactId = NULL;
