@@ -69,13 +69,13 @@ class CRM_Cdashtabs_Page_Section extends CRM_Core_Page {
       else {
         // Remove ufgroup option value in section list if is_cdash is null
         $cdashtabsOptionValue = json_decode(CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionValue', $key, 'value'));
-        if (!$cdashtabsOptionValue->is_cdash) {
-          unset($optionValue[$key]);
-          continue;
-        }
-
         $optionValue[$key]['sectionId'] = $optionId;
         $optionValue[$key]['label'] = CRM_Cdashtabs_Settings::getProfileTitle($optionId);
+
+        if (!$cdashtabsOptionValue->is_cdash) {
+          $optionValue[$key]['is_active'] = FALSE;
+          continue;
+        }
 
         // Remove from section if didn't exist in ufgroup profile
         // since we can't remove it using cdashtabs_civicrm_post hook
