@@ -1,6 +1,7 @@
 <?php
 
 require_once 'CRM/Core/Form.php';
+use CRM_Cdashtabs_ExtensionUtil as E;
 
 /**
  * Form controller class for extension Settings form.
@@ -75,15 +76,15 @@ class CRM_Cdashtabs_Form_Settings extends CRM_Core_Form {
           default:
             $add = 'add' . $setting['quick_form_type'];
             if ($add == 'addElement') {
-              $this->$add($setting['html_type'], $name, ts($setting['title']), CRM_Utils_Array::value('html_attributes', $setting, array()));
+              $this->$add($setting['html_type'], $name, E::ts($setting['title']), CRM_Utils_Array::value('html_attributes', $setting, array()));
             }
             else {
-              $this->$add($name, ts($setting['title']));
+              $this->$add($name, E::ts($setting['title']));
             }
             break;
         }
       }
-      $descriptions[$setting['name']] = ts($setting['description']);
+      $descriptions[$setting['name']] = E::ts($setting['description']);
 
       if (!empty($setting['X_form_rules_args'])) {
         $rules_args = (array) $setting['X_form_rules_args'];
@@ -98,12 +99,12 @@ class CRM_Cdashtabs_Form_Settings extends CRM_Core_Form {
     $this->addButtons(array(
       array(
         'type' => 'submit',
-        'name' => ts('Submit'),
+        'name' => E::ts('Submit'),
         'isDefault' => TRUE,
       ),
       array(
         'type' => 'cancel',
-        'name' => ts('Cancel'),
+        'name' => E::ts('Cancel'),
       ),
     ));
 
@@ -175,7 +176,7 @@ class CRM_Cdashtabs_Form_Settings extends CRM_Core_Form {
     $unsettings = array_fill_keys(array_keys(array_diff_key($settings, $this->_submittedValues)), NULL);
     _cdashtabs_civicrmapi('setting', 'create', $unsettings);
 
-    CRM_Core_Session::setStatus(" ", ts('Settings saved.'), "success");
+    CRM_Core_Session::setStatus(" ", E::ts('Settings saved.'), "success");
   }
 
   /**
