@@ -77,7 +77,6 @@ class CRM_Cdashtabs_Form_Section extends CRM_Core_Form {
       foreach ($defaultValues as $key => $value) {
         $defaults[$key] = $value;
       }
-      $defaults['value'] = json_encode($defaultValues);
     }
 
     $defaults['weight'] = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionValue', $this->_id, 'weight');
@@ -124,13 +123,6 @@ class CRM_Cdashtabs_Form_Section extends CRM_Core_Form {
         'is_show_pre_post',
         E::ts('Display pre- and post-help on Contact Dashboard?')
       );
-
-      $this->add('hidden',
-        'value',
-        E::ts('Value'),
-        CRM_Core_DAO::getAttribute('CRM_Core_DAO_OptionValue', 'value'),
-        TRUE
-      );
     }
 
     $this->add('number',
@@ -160,14 +152,16 @@ class CRM_Cdashtabs_Form_Section extends CRM_Core_Form {
   }
 
   public function postProcess() {
-    $params = $this->exportValues();
-    $values = json_decode($params['value']);
+    $formParams = $this->exportValues();
 
-    $saveOptionValue = [
+    // Get saved values from database.
+    $values = json_decode(CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionValue', $this->_id, 'value'));
+
+    $apiParams = [
       'label' => CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionValue', $this->_id, 'label'),
       'value' => CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionValue', $this->_id, 'value'),
       'description' => '',
-      'weight' => $params['weight'],
+      'weight' => $formParams['weight'],
       'is_active' => '1',
       'filter' => CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionValue', $this->_id, 'filter', 'id'),
       'option_group_id' => $this->_gid,
@@ -175,28 +169,26 @@ class CRM_Cdashtabs_Form_Section extends CRM_Core_Form {
     ];
 
     if ($this->_type === 'native') {
-      $saveOptionValue['label'] = $params['label'];
+      $apiParams['label'] = $formParams['label'];
     }
     else {
-      if ($values->is_cdash !== $params['is_cdash']) {
-        $values->is_cdash = $params['is_cdash'];
+      if ($values->is_cdash !== $formParams['is_cdash']) {
+        $values->is_cdash = $formParams['is_cdash'];
       }
 
-      if ($values->is_show_pre_post !== $params['is_show_pre_post']) {
-        $values->is_show_pre_post = $params['is_show_pre_post'];
+      if ($values->is_show_pre_post !== $formParams['is_show_pre_post']) {
+        $values->is_show_pre_post = $formParams['is_show_pre_post'];
       }
 
-      $saveOptionValue['value'] = json_encode($values);
+      $apiParams['value'] = json_encode($values);
     }
 
-    $optionValue = CRM_Core_OptionValue::addOptionValue($saveOptionValue, $this->_gName, $this->_action, $this->_id);
+    $results = civicrm_api4('OptionValue', 'update', ['values' => $apiParams]);
 
     CRM_Core_Session::setStatus(ts('The %1 \'%2\' has been saved.', [
       1 => 'Contact Dashboard Tabs: Section',
-      2 => $optionValue->label,
+      2 => $apiParams['label'],
     ]), ts('Saved'), 'success');
-
-    $this->ajaxResponse['optionValue'] = $optionValue->toArray();
 
     parent::postProcess();
   }
