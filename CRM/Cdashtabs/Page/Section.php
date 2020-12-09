@@ -22,10 +22,10 @@ class CRM_Cdashtabs_Page_Section extends CRM_Core_Page {
     if (!(self::$_links)) {
       self::$_links = array(
         CRM_Core_Action::UPDATE => array(
-          'name' => ts('Edit'),
+          'name' => E::ts('Edit'),
           'url' => 'civicrm/admin/cdashtabs/section',
           'qs' => 'action=update&id=%%id%%&reset=1',
-          'title' => ts('Edit Contact Dashboard Tab'),
+          'title' => E::ts('Edit Contact Dashboard Tab'),
         ),
       );
     }
@@ -42,56 +42,60 @@ class CRM_Cdashtabs_Page_Section extends CRM_Core_Page {
     );
 
     $groupParams = array('name' => 'cdashtabs');
-    $optionValue = CRM_Core_OptionValue::getRows($groupParams, $this->links(), 'component_id,weight');
+    $rows = CRM_Core_OptionValue::getRows($groupParams, $this->links(), 'component_id,weight');
     $gName = 'cdashtabs';
     $returnURL = CRM_Utils_System::url("civicrm/admin/cdashtabs/section",
       "reset=1"
     );
-    CRM_Utils_Weight::addOrder($optionValue, 'CRM_Core_DAO_OptionValue',
+    CRM_Utils_Weight::addOrder($rows, 'CRM_Core_DAO_OptionValue',
       'id', $returnURL, NULL
     );
+    // Array of user dashboard items configured for display.
     $nativeUserDashboardOptions = CRM_Utils_Array::explodePadded(Civi::settings()->get('user_dashboard_options'));
 
-    foreach ($optionValue as $key => $option) {
-      $optionLabel = explode('_', $option['name']);
-      $type = array_shift($optionLabel);
-      $optionId = end($optionLabel);
-      $optionValue[$key]['type'] = ($type === 'uf' ? 'Profile' : ucfirst($type));
+    foreach ($rows as $key => $row) {
+      // OptionValue name will be in a format like 'native_1', 'profile_17', etc.
+      $optionValueNameParts = explode('_', $row['name']);
+      $optionId = array_pop($optionValueNameParts);
+      $type = implode('_', $optionValueNameParts);
+
+      $rows[$key]['type'] = ($type === 'uf_group' ? 'Profile' : ucfirst($type));
 
       if ($type == 'native') {
         $nativeDetails = CRM_Cdashtabs_Settings::getUserDashboardOptionsDetails($optionId);
-        $optionValue[$key]['sectionId'] = $nativeDetails['sectionId'];
+        $rows[$key]['sectionId'] = $nativeDetails['sectionId'];
 
         if (!in_array($optionId, $nativeUserDashboardOptions)) {
-          unset($optionValue[$key]);
+          unset($rows[$key]);
         }
       }
-      else {
+      elseif ($type == 'uf_group') {
         // Remove ufgroup option value in section list if is_cdash is null
-        $cdashtabsOptionValue = json_decode(CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionValue', $key, 'value'));
-        $optionValue[$key]['sectionId'] = $optionId;
-        $optionValue[$key]['label'] = CRM_Cdashtabs_Settings::getProfileTitle($optionId);
+        $cdashtabsValues = json_decode(CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionValue', $key, 'value'));
+        $rows[$key]['sectionId'] = $optionId;
+        $rows[$key]['label'] = CRM_Cdashtabs_Settings::getProfileTitle($optionId);
 
-        if (!$cdashtabsOptionValue->is_cdash) {
-          $optionValue[$key]['is_active'] = FALSE;
+        if (!$cdashtabsValues->is_cdash) {
+          $rows[$key]['is_active'] = FALSE;
           continue;
         }
 
-        // Remove from section if didn't exist in ufgroup profile
-        // since we can't remove it using cdashtabs_civicrm_post hook
+        // Remove from sections list if the profile doesn't exist anymore, which can happen
+        // if profile is deleted, because we can't clean up the optionValue because there's
+        // no uggroup post hook (yet).
         $uFGroup = \Civi\Api4\UFGroup::get()
           ->addWhere('id', '=', $optionId)
           ->addOrderBy('id', 'DESC')
           ->execute()
           ->first();
         if (!$uFGroup) {
-          unset($optionValue[$key]);
+          unset($rows[$key]);
         }
       }
     }
 
     $this->assign('action', $action);
-    $this->assign('rows', $optionValue);
+    $this->assign('rows', $rows);
 
     if ($action & (CRM_Core_Action::UPDATE | CRM_Core_Action::ADD)) {
       $this->edit($action);
@@ -107,7 +111,7 @@ class CRM_Cdashtabs_Page_Section extends CRM_Core_Page {
    */
   public function edit($action) {
     // create a simple controller for editing custom data
-    $controller = new CRM_Core_Controller_Simple('CRM_Cdashtabs_Form_Section', ts('Contact Dashboard Tabs: Sections'), $action);
+    $controller = new CRM_Core_Controller_Simple('CRM_Cdashtabs_Form_Section', E::ts('Contact Dashboard Tabs: Sections'), $action);
 
     // set the userContext stack
     $session = CRM_Core_Session::singleton();
