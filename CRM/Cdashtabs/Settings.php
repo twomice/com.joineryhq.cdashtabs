@@ -63,6 +63,7 @@ class CRM_Cdashtabs_Settings {
   public static function getFilteredSettings($isCdash = NULL, $type) {
     $filteredSettings = [];
     $optionGroup = \Civi\Api4\OptionGroup::get()
+      ->setCheckPermissions(FALSE)
       ->addWhere('name', '=', 'cdashtabs')
       ->addChain('get_optionValue', \Civi\Api4\OptionValue::get()->addWhere('option_group_id', '=', '$id')->addOrderBy('weight', 'ASC'))
       ->execute()
@@ -99,6 +100,7 @@ class CRM_Cdashtabs_Settings {
     $details = [];
 
     $optionValues = \Civi\Api4\OptionValue::get()
+      ->setCheckPermissions(FALSE)
       ->addWhere('option_group_id:name', '=', 'user_dashboard_options')
       ->addWhere('value', '=', $value)
       ->setLimit(1)
