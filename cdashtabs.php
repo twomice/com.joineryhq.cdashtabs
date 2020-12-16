@@ -273,6 +273,7 @@ function cdashtabs_civicrm_pageRun(&$page) {
       // Find out which native sections are enabled for dashboard display.
       $nativeUserDashboardOptions = CRM_Utils_Array::explodePadded(Civi::settings()->get('user_dashboard_options'));
       $cdashtabsOptionGroup = \Civi\Api4\OptionGroup::get()
+        ->setCheckPermissions(FALSE)
         ->addWhere('name', '=', 'cdashtabs')
         ->addChain('get_optionValue', \Civi\Api4\OptionValue::get()
           ->addWhere('option_group_id', '=', '$id')
