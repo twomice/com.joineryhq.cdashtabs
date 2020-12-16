@@ -6,6 +6,13 @@
  */
 class CRM_Cdashtabs_Settings {
 
+  /**
+   * Get settings for a given section, as defined by a type and an ID.
+   *
+   * @param int $id Entity id (e.g., profile id, natived dashboard component id, etc.)
+   * @param string $type Entity type ('uf_group' or 'native')
+   * @return array Json-decoded settings from optionValue for this section.
+   */
   public static function getSettings($id, $type) {
     $settingName = "{$type}_{$id}";
     $result = \Civi\Api4\OptionValue::get()
@@ -18,6 +25,15 @@ class CRM_Cdashtabs_Settings {
     return json_decode($settingJson, TRUE);
   }
 
+  /**
+   * Save value as json-encoded settings, for a given optionValue, as defined by type and ID.
+   *
+   * @param int $id Entity id (e.g., profile id, natived dashboard component id, etc.)
+   * @param array $settings Full list of all settings to save. This will NOT be merged with any existing settings.
+   * @param string $type Entity type ('uf_group' or 'native')
+   *
+   * @return void
+   */
   public static function saveAllSettings($id, $settings, $type) {
     $settingName = "{$type}_{$id}";
     $result = \Civi\Api4\OptionValue::get()
@@ -43,25 +59,20 @@ class CRM_Cdashtabs_Settings {
     $settings["{$type}_id"] = $id;
     $createParams['value'] = json_encode($settings);
 
-    try {
-      civicrm_api3('optionValue', 'create', $createParams);
-      return TRUE;
-    }
-    catch (API_Exception $e) {
-      return FALSE;
-    }
+    civicrm_api3('optionValue', 'create', $createParams);
   }
 
   /**
-   * Get an array of saved settings-per-uf-group, filtered per the given criteria.
+   * Get an array of saved settings-per-section, filtered per the given criteria.
    *
-   * @param Boolean $isCdash If given, filter only for settings-per-uf-group where
+   * @param boolean $isCdash If given, filter only for settings-per-section where
    *    the setting value is_cdash matches the given value.
-   * @param String $type
+   * @param string $type Entity type ('uf_group' or 'native')
    *
    */
   public static function getFilteredSettings($isCdash = NULL, $type) {
     $filteredSettings = [];
+    // Get cdashtabs optionGroup and all of its optionValues.
     $optionGroup = \Civi\Api4\OptionGroup::get()
       ->setCheckPermissions(FALSE)
       ->addWhere('name', '=', 'cdashtabs')
@@ -81,22 +92,32 @@ class CRM_Cdashtabs_Settings {
     return $filteredSettings;
   }
 
-  public static function getProfileTitle($id) {
+  /**
+   * Get the title to display for a give ufGroup.
+   *
+   * @param int $id UFGroup id
+   * @return string
+   */
+  public static function getProfileDisplayTitle($id) {
     $title = '';
-    $uFGroups = \Civi\Api4\UFGroup::get()
+    $ufGroups = \Civi\Api4\UFGroup::get()
       ->addWhere('id', '=', $id)
       ->setLimit(1)
       ->execute();
-    foreach ($uFGroups as $uFGroup) {
-      $title = !empty($uFGroup['frontend_title']) ? $uFGroup['frontend_title'] : $uFGroup['title'];
+    foreach ($ufGroups as $ufGroup) {
+      $title = !empty($ufGroup['frontend_title']) ? $ufGroup['frontend_title'] : $ufGroup['title'];
     }
 
     return $title;
   }
 
+  /**
+   * Get a collection of attributes for a given native user dashboard component.
+   *
+   * @param int $value Native user dashboard component id
+   * @return array Attributes of the given user dashboard component
+   */
   public static function getUserDashboardOptionsDetails($value) {
-    // Use api to get user dashboard options base on value and
-    // get the same class for hide/show of the tab
     $details = [];
 
     $optionValues = \Civi\Api4\OptionValue::get()

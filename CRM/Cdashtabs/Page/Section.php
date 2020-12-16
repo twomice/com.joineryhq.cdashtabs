@@ -73,7 +73,7 @@ class CRM_Cdashtabs_Page_Section extends CRM_Core_Page {
         // Remove ufgroup option value in section list if is_cdash is null
         $cdashtabsValues = json_decode(CRM_Core_DAO::getFieldValue('CRM_Core_DAO_OptionValue', $key, 'value'));
         $rows[$key]['sectionId'] = $optionId;
-        $rows[$key]['label'] = CRM_Cdashtabs_Settings::getProfileTitle($optionId);
+        $rows[$key]['label'] = CRM_Cdashtabs_Settings::getProfileDisplayTitle($optionId);
 
         if (!$cdashtabsValues->is_cdash) {
           $rows[$key]['is_active'] = FALSE;
@@ -105,9 +105,7 @@ class CRM_Cdashtabs_Page_Section extends CRM_Core_Page {
   }
 
   /**
-   * Get name of edit form.
-   *
-   *   Classname of edit form.
+   * Respond to add/update action.
    */
   public function edit($action) {
     // create a simple controller for editing custom data

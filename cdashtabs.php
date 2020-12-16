@@ -306,7 +306,7 @@ function cdashtabs_civicrm_pageRun(&$page) {
             // If it's not native, honor is_cdash setting by skipping this section.
             continue;
           }
-          $tabButtons[$key]['tabLabel'] = CRM_Cdashtabs_Settings::getProfileTitle($optionValueId);
+          $tabButtons[$key]['tabLabel'] = CRM_Cdashtabs_Settings::getProfileDisplayTitle($optionValueId);
           $tabButtons[$key]['class'] = $optionValueId;
 
           // Exclude from buttons if profile no longer exists (because deleting a
