@@ -94,13 +94,13 @@ class CRM_Cdashtabs_Form_Section extends CRM_Core_Form {
 
       $this->add('text',
         'label',
-        ts('Label'),
+        E::ts('Label'),
         CRM_Core_DAO::getAttribute('CRM_Core_DAO_OptionValue', 'label'),
         TRUE
       );
 
       $this->addRule('label',
-        ts('This Label already exists in the database for this option group. Please select a different Label.'),
+        E::ts('This Label already exists in the database for this option group. Please select a different Label.'),
         'optionExists',
         ['CRM_Core_DAO_OptionValue', $this->_id, $this->_gid, 'label', FALSE]
       );
@@ -185,10 +185,10 @@ class CRM_Cdashtabs_Form_Section extends CRM_Core_Form {
 
     $results = civicrm_api4('OptionValue', 'update', ['values' => $apiParams]);
 
-    CRM_Core_Session::setStatus(ts('The %1 \'%2\' has been saved.', [
+    CRM_Core_Session::setStatus(E::ts('The %1 \'%2\' has been saved.', [
       1 => 'Contact Dashboard Tabs: Section',
       2 => $apiParams['label'],
-    ]), ts('Saved'), 'success');
+    ]), E::ts('Saved'), 'success');
 
     parent::postProcess();
   }
