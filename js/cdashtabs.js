@@ -10,7 +10,7 @@ CRM.$(function($){
 
   for (var i in CRM.vars.cdashtabs.tabButtons) {
     // Append button with data-target and label
-    cdashtabsButtonsDiv.append('<button data-target="crm-dashboard-' + CRM.vars.cdashtabs.tabButtons[i].class + '">' + CRM.vars.cdashtabs.tabButtons[i].tabLabel + '</button>');
+    cdashtabsButtonsDiv.append('<button data-target="crm-dashboard-' + CRM.vars.cdashtabs.tabButtons[i].cssClass + '">' + CRM.vars.cdashtabs.tabButtons[i].tabLabel + '</button>');
   }
 
   // Add button show/hide row functionality when clicked

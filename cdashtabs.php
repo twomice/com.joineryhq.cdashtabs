@@ -299,7 +299,7 @@ function cdashtabs_civicrm_pageRun(&$page) {
 
           //  Get the same class as the user dashboard option base on value
           $nativeDetails = CRM_Cdashtabs_Settings::getUserDashboardOptionsDetails($cdashtabsOptionValue['value']);
-          $tabButtons[$key]['class'] = $nativeDetails['class'];
+          $tabButtons[$key]['cssClass'] = $nativeDetails['cssClass'];
         }
         else {
           if (empty($optionValueSettings->is_cdash)) {
@@ -307,7 +307,7 @@ function cdashtabs_civicrm_pageRun(&$page) {
             continue;
           }
           $tabButtons[$key]['tabLabel'] = CRM_Cdashtabs_Settings::getProfileDisplayTitle($optionValueId);
-          $tabButtons[$key]['class'] = $optionValueId;
+          $tabButtons[$key]['cssClass'] = $optionValueId;
 
           // Exclude from buttons if profile no longer exists (because deleting a
           // profile will not remove the corresponding cdashtabs optionValue.)

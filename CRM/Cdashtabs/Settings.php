@@ -124,17 +124,20 @@ class CRM_Cdashtabs_Settings {
       ->setCheckPermissions(FALSE)
       ->addWhere('option_group_id:name', '=', 'user_dashboard_options')
       ->addWhere('value', '=', $value)
-      ->setLimit(1)
-      ->execute();
-    foreach ($optionValues as $optionValue) {
-      $optionClass = str_replace(' ', '', $optionValue['name']);
-      $details['class'] = strtolower($optionClass);
-      $details['sectionId'] = $optionValue['label'];
+      ->execute()
+      ->first();
 
-      if ($optionValue['name'] == trim($optionValue['name']) && strpos($optionValue['name'], ' ') !== FALSE) {
-        $details['class'] = lcfirst($optionClass);
-      }
+    $optionClass = str_replace(' ', '', $optionValue['name']);
+    $optionClass = strtolower($optionClass);
+    $details['sectionId'] = $optionValue['label'];
+
+    // You'd think civicrm core would have a function to do this, but they don't;
+    // they just manually code it, just like this:
+    // reference: CRM_Contact_Page_View_UserDashBoard::buildUserDashBoard();
+    if ($optionValue['name'] == 'Permissioned Orgs') {
+      $optionClass = 'permissionedOrgs';
     }
+    $details['cssClass'] = $optionClass;
 
     return $details;
   }
