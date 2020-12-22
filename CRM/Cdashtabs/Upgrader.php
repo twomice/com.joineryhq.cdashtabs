@@ -16,7 +16,7 @@ class CRM_Cdashtabs_Upgrader extends CRM_Cdashtabs_Upgrader_Base {
     $results = \Civi\Api4\OptionGroup::create()
       ->setCheckPermissions(FALSE)
       ->addValue('name', 'cdashtabs')
-      ->addValue('title', 'Contact Dadshboard Tabs Extension Options')
+      ->addValue('title', 'Contact Dashboard Tabs Extension Options')
       ->addValue('is_active', TRUE)
       ->addValue('is_locked', TRUE)
       ->addValue('is_reserved', TRUE)
