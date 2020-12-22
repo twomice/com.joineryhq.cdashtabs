@@ -123,6 +123,9 @@ class CRM_Cdashtabs_Form_Section extends CRM_Core_Form {
         'is_show_pre_post',
         E::ts('Display pre- and post-help on Contact Dashboard?')
       );
+
+      CRM_Core_Resources::singleton()->addScriptFile('com.joineryhq.cdashtabs', 'js/CRM_Cdashtabs_Form_Section-uf_group.js', 100, 'page-footer');
+
     }
 
     $this->add('number',
