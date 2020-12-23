@@ -120,7 +120,7 @@ class CRM_Cdashtabs_Settings {
   public static function getUserDashboardOptionsDetails($value) {
     $details = [];
 
-    $optionValues = \Civi\Api4\OptionValue::get()
+    $optionValue = \Civi\Api4\OptionValue::get()
       ->setCheckPermissions(FALSE)
       ->addWhere('option_group_id:name', '=', 'user_dashboard_options')
       ->addWhere('value', '=', $value)
