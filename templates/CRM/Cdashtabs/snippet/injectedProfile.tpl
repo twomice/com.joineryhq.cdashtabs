@@ -1,5 +1,5 @@
 <div class="cdash-inject" style="display: none;">
-  <div id='crm-container' class='crm-container cdash-inject-list'>
+  <div id='crm-container' class='crm-container cdash-inject-section'>
     <table>
       <tbody>
         <tr class='crm-dashboard-{$profileName}'>
