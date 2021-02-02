@@ -14,6 +14,6 @@ CRM.$(function($){
   }
 
   if (CRM.vars.cdashtabs.dashboardLink) {
-    $('#page-title').after('<a href="' + CRM.vars.cdashtabs.dashboardLink + '">Back to my dashboard</a>')
+    $('#crm-container').before('<a href="' + CRM.vars.cdashtabs.dashboardLink + '">Back to my dashboard</a>')
   }
 });
