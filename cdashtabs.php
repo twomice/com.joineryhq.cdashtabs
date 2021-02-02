@@ -264,6 +264,16 @@ function cdashtabs_civicrm_pageRun(&$page) {
   if ($pageName == 'CRM_Contact_Page_View_UserDashBoard') {
     // See also cdashtabs_civicrm_alterContent(), which acts on the same page.
     $useTabs = Civi::settings()->get('cdashtabs_use_tabs');
+
+    $displayDashboardLink = Civi::settings()->get('cdashtabs_dashboard_link');
+
+    if ($displayDashboardLink && $page->getVar('_contactId') != CRM_Core_Session::singleton()->getLoggedInContactID()) {
+      $jsVars = [
+        'dashboardLink' => CRM_Utils_System::url('civicrm/user', 'reset=1'),
+      ];
+      CRM_Core_Resources::singleton()->addVars('cdashtabs', $jsVars);
+    }
+
     CRM_Core_Resources::singleton()->addScriptFile('com.joineryhq.cdashtabs', 'js/cdashtabs-inject.js', 100, 'page-footer');
 
     if ($useTabs) {

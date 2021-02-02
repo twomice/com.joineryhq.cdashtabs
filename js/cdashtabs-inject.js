@@ -12,4 +12,8 @@ CRM.$(function($){
       $('.dashboard-elements > tbody').append(injectHtml);
     });
   }
+
+  if (CRM.vars.cdashtabs.dashboardLink) {
+    $('#page-title').after('<a href="' + CRM.vars.cdashtabs.dashboardLink + '">Back to my dashboard</a>')
+  }
 });
