@@ -13,7 +13,7 @@ CRM.$(function($){
     });
   }
 
-  if (CRM.vars.cdashtabs.dashboardLink) {
-    $('#crm-container').before('<a href="' + CRM.vars.cdashtabs.dashboardLink + '">Back to my dashboard</a>')
+  if (CRM.vars.cdashtabs.dashboardLink && !$('#cdashtabs-mydashboard-link').length) {
+    $('#crm-container').before('<a id="cdashtabs-mydashboard-link" href="' + CRM.vars.cdashtabs.dashboardLink + '">Back to my dashboard</a>');
   }
 });
