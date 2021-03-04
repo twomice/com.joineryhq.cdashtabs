@@ -114,10 +114,26 @@ class CRM_Cdashtabs_Form_Section extends CRM_Core_Form {
         '1' => $profileUrl,
       ));
 
+      // Get contact types
+      $contactTypes = \Civi\Api4\ContactType::get()
+        ->setCheckPermissions(FALSE)
+        ->execute();
+
+      $selectArr = [];
+      // Sort contact types
+      foreach ($contactTypes as $contactType) {
+        $selectArr[$contactType['id']] = $contactType['label'];
+      }
+
       $this->add('checkbox',
         'is_cdash',
         E::ts('Display on Contact Dashboard?')
       );
+
+      $this->add('select', 'cdash_contact_type', E::ts('Display only for contacts of type'), $selectArr, FALSE, [
+        'multiple' => 'multiple',
+        'class' => 'crm-select2',
+      ]);
 
       $this->add('checkbox',
         'is_show_pre_post',
@@ -177,6 +193,10 @@ class CRM_Cdashtabs_Form_Section extends CRM_Core_Form {
     else {
       if ($values->is_cdash !== $formParams['is_cdash']) {
         $values->is_cdash = $formParams['is_cdash'];
+      }
+
+      if ($values->cdash_contact_type !== $formParams['cdash_contact_type']) {
+        $values->cdash_contact_type = $formParams['cdash_contact_type'];
       }
 
       if ($values->is_show_pre_post !== $formParams['is_show_pre_post']) {

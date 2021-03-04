@@ -26,6 +26,12 @@
             <td class="label">{$form.is_cdash.label}</td>
             <td>{$form.is_cdash.html}</td>
           </tr>
+          <tr class="crm-admin-options-form-block-cdash_contact_type">
+            <td class="label">{$form.cdash_contact_type.label}</td>
+            <td>{$form.cdash_contact_type.html}<br />
+              <span class="description">{ts}Leave blank to display for all contacts.{/ts}</span>
+            </td>
+          </tr>
           <tr class="crm-admin-options-form-block-is_show_pre_post">
             <td class="label">{$form.is_show_pre_post.label}</td>
             <td>{$form.is_show_pre_post.html}</td>
