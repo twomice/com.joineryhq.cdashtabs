@@ -115,15 +115,7 @@ class CRM_Cdashtabs_Form_Section extends CRM_Core_Form {
       ));
 
       // Get contact types
-      $contactTypes = \Civi\Api4\ContactType::get()
-        ->setCheckPermissions(FALSE)
-        ->execute();
-
-      $selectArr = [];
-      // Sort contact types
-      foreach ($contactTypes as $contactType) {
-        $selectArr[$contactType['id']] = $contactType['label'];
-      }
+      $selectArr = CRM_Contact_BAO_ContactType::getSelectElements(FALSE, FALSE);
 
       $this->add('checkbox',
         'is_cdash',

@@ -17,15 +17,7 @@ function cdashtabs_civicrm_buildForm($formName, &$form) {
   // For the Profile edit settings form, add our custom configuration field.
   if ($formName == 'CRM_UF_Form_Group') {
     // Get contact types
-    $contactTypes = \Civi\Api4\ContactType::get()
-      ->setCheckPermissions(FALSE)
-      ->execute();
-
-    $selectArr = [];
-    // Sort contact types
-    foreach ($contactTypes as $contactType) {
-      $selectArr[$contactType['id']] = $contactType['label'];
-    }
+    $selectArr = CRM_Contact_BAO_ContactType::getSelectElements(FALSE, FALSE);
 
     // Create new fields.
     $form->addElement('checkbox', 'is_cdash', E::ts('Display on Contact Dashboard?'));
@@ -279,51 +271,14 @@ function cdashtabs_civicrm_navigationMenu(&$menu) {
  *
  * @return boolean
  */
-function _cdashtabs_civicrm_checkContactType($contactId, $cdashContactTypeIds) {
-  // Set variable for checking
-  $checkContactType = 0;
-
-  // Get the contact's array of types and subtypes together
+function _cdashtabs_civicrm_checkContactType($contactId, $cdashContactTypes) {
   $contacts = \Civi\Api4\Contact::get()
-    ->setSelect([
-      'contact_type',
-      'contact_sub_type',
-    ])
     ->addWhere('id', '=', $contactId)
+    ->addClause('OR', ['contact_type', 'IN', $cdashContactTypes], ['contact_sub_type', 'IN', $cdashContactTypes])
     ->setCheckPermissions(FALSE)
     ->execute();
 
-  // Collect Contact Types and Subtypes as $types
-  $types = [];
-  foreach ($contacts as $contact) {
-    $types[] = $contact['contact_type'];
-    if (is_array($contact['contact_sub_type'])) {
-      foreach ($contact['contact_sub_type'] as $subtype) {
-        $types[] = $subtype;
-      }
-    }
-  }
-
-  // Remove any duplicates as a sanity check
-  $types = array_unique($types);
-
-  // Get the contact type IDs from types array
-  $contactTypes = \Civi\Api4\ContactType::get()
-    ->setSelect([
-      'id',
-    ])
-    ->addWhere('label', 'IN', $types)
-    ->setCheckPermissions(FALSE)
-    ->execute();
-
-  // check contactid contact type if its in the $cdashContactTypeIds
-  foreach ($contactTypes as $contactType) {
-    if (in_array($contactType['id'], $cdashContactTypeIds)) {
-      $checkContactType = 1;
-    }
-  }
-
-  return $checkContactType;
+  return (bool) $contacts->rowCount;
 }
 
 /**
@@ -390,14 +345,9 @@ function cdashtabs_civicrm_pageRun(&$page) {
             continue;
           }
 
-          // Get a list of settings-per-uf-group where is_cdash = TRUE.
-          $cdashProfileSettings = CRM_Cdashtabs_Settings::getFilteredSettings(TRUE, 'uf_group');
-
-          // Check if there are ids in cdash_contact_type cdashtabs
-          $cdashContactTypeIds = $cdashProfileSettings[0]['cdash_contact_type'];
-          if ($cdashContactTypeIds) {
+          if ($optionValueSettings->cdash_contact_type) {
             // Skip if contactid contact type is not in the cdash_contact_type
-            if (!_cdashtabs_civicrm_checkContactType($page->_contactId, $cdashContactTypeIds)) {
+            if (!_cdashtabs_civicrm_checkContactType($page->_contactId, $optionValueSettings->cdash_contact_type)) {
               continue;
             }
           }
@@ -439,15 +389,6 @@ function cdashtabs_civicrm_alterContent(&$content, $context, $tplName, &$object)
     // Get a list of settings-per-uf-group where is_cdash = TRUE.
     $cdashProfileSettings = CRM_Cdashtabs_Settings::getFilteredSettings(TRUE, 'uf_group');
 
-    // Check if there are ids in cdash_contact_type cdashtabs
-    $cdashContactTypeIds = $cdashProfileSettings[0]['cdash_contact_type'];
-    if ($cdashContactTypeIds) {
-      // Return if contactid contact type is not in the cdash_contact_type
-      if (!_cdashtabs_civicrm_checkContactType($object->_contactId, $cdashContactTypeIds)) {
-        return;
-      }
-    }
-
     $userContactId = NULL;
     if (!empty($cdashProfileSettings)) {
       // We need the current contact ID to display the profiles properly.
@@ -465,6 +406,13 @@ function cdashtabs_civicrm_alterContent(&$content, $context, $tplName, &$object)
 
     // For each of those settings-groups, process the given uf-group for display.
     foreach ($cdashProfileSettings as $cdashProfileSetting) {
+      if ($cdashProfileSetting['cdash_contact_type']) {
+        // Skip if contactid contact type is not in the cdash_contact_type
+        if (!_cdashtabs_civicrm_checkContactType($object->_contactId, $cdashProfileSetting['cdash_contact_type'])) {
+          continue;
+        }
+      }
+
       $ufId = $cdashProfileSetting['uf_group_id'];
       $ufGroup = \Civi\Api4\UFGroup::get()
         ->addWhere('id', '=', $ufId)
