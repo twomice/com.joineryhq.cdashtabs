@@ -31,7 +31,7 @@ class CRM_Cdashtabs_Upgrader_Base {
   protected $extensionDir;
 
   /**
-   * @var array
+   * @var revisionNumber[]
    *   sorted numerically
    */
   private $revisions;
@@ -47,9 +47,10 @@ class CRM_Cdashtabs_Upgrader_Base {
    */
   public static function instance() {
     if (!self::$instance) {
+      // FIXME auto-generate
       self::$instance = new CRM_Cdashtabs_Upgrader(
         'com.joineryhq.cdashtabs',
-        E::path()
+        realpath(__DIR__ . '/../../../')
       );
     }
     return self::$instance;
