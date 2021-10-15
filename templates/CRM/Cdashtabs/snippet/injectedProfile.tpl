@@ -5,7 +5,7 @@
         <tr class='crm-dashboard-{$profileName}'>
           <td>
             <div class='header-dark'>{$profileTitle}</div>
-            {if $is_show_pre_post}
+            {if $is_show_pre_post && $help_pre}
               <div class="messages help">
                 {$help_pre}
               </div>
@@ -13,7 +13,7 @@
             <div class='view-content'>
               <div class='crm-profile-name-{$profileName}'>{$profileContent}</div>
             </div>
-            {if $is_show_pre_post}
+            {if $is_show_pre_post && $help_post}
               <div class="messages help">
                 {$help_post}
               </div>
