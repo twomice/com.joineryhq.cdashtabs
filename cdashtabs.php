@@ -297,7 +297,7 @@ function cdashtabs_civicrm_pageRun(&$page) {
 
     if ($displayDashboardLink && $page->getVar('_contactId') != CRM_Core_Session::singleton()->getLoggedInContactID()) {
       $jsVars = [
-        'dashboardLink' => parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) . '?reset=1',
+        'dashboardLink' => CRM_Cdashtabs_Utils::getDashboardBaseUrl(),
       ];
       CRM_Core_Resources::singleton()->addVars('cdashtabs', $jsVars);
     }

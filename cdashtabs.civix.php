@@ -7,9 +7,9 @@
  * extension.
  */
 class CRM_Cdashtabs_ExtensionUtil {
-  const SHORT_NAME = "cdashtabs";
-  const LONG_NAME = "com.joineryhq.cdashtabs";
-  const CLASS_PREFIX = "CRM_Cdashtabs";
+  const SHORT_NAME = 'cdashtabs';
+  const LONG_NAME = 'com.joineryhq.cdashtabs';
+  const CLASS_PREFIX = 'CRM_Cdashtabs';
 
   /**
    * Translate a string using the extension's domain.
