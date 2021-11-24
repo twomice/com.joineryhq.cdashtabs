@@ -11,8 +11,6 @@ use CRM_Cdashtabs_ExtensionUtil as E;
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_buildForm
  */
 function cdashtabs_civicrm_buildForm($formName, &$form) {
-  // By default, don't add cdashtabs field.
-  $isCdash = FALSE;
 
   // For the Profile edit settings form, add our custom configuration field.
   if ($formName == 'CRM_UF_Form_Group') {
@@ -52,6 +50,30 @@ function cdashtabs_civicrm_buildForm($formName, &$form) {
         'is_show_pre_post' => $settings['is_show_pre_post'],
       );
       $form->setDefaults($defaults);
+    }
+  }
+  elseif ($formName == 'CRM_Profile_Form_Edit') {
+    // Check whether the form has a specified cdashtabs destination (could be in GET or POST).
+    $cdashtabsdest = CRM_Utils_Request::retrieve('cdashtabsdest', 'String');
+    if (!empty($cdashtabsdest)) {
+      if (!$form->_flagSubmitted) {
+        // We're loading the form for editing (this is not a submitted form). Therefore
+        // we need to store cdashtabsdest as a hidden field so that it's passed
+        // back to us upon submisison.
+        $form->addElement('hidden', 'cdashtabsdest', $cdashtabsdest);
+      }
+      else {
+        // We're processing a submitted form. Therefore we need to instruct the
+        // form to redirect to our cdashtabs destination.
+        $gid = CRM_Utils_Request::retrieve('gid', 'Int', $form, TRUE);
+        $id = CRM_Utils_Request::retrieve('id', 'Int', $form, TRUE);
+        $dashQuery = [
+          'reset' => 1,
+          'id' => $id,
+        ];
+        $dashUrl = CRM_Utils_System::url($cdashtabsdest, $dashQuery, TRUE, "profile-{$gid}");
+        $form->controller->_destination = $dashUrl;
+      }
     }
   }
 }
