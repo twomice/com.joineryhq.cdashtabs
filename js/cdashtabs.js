@@ -43,7 +43,7 @@ CRM.$(function($){
   });
 
   // If we're requested to reveal a specific section, do it.
-  var requestedSectionIdentifier = cdashtabsAnchor.replace(/^#/, '');
+  var requestedSectionIdentifier = CRM.$(location).attr('hash').replace(/^#/, '');
   if (requestedSectionIdentifier) {
     var requestedSectionButtonId = 'cdashtabs-' + requestedSectionIdentifier;
     cdashtabsButtonsDiv.find('button#' + requestedSectionButtonId).trigger('click');
