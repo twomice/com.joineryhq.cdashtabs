@@ -1,17 +1,17 @@
 <div class="cdashtabs-inject" style="display: none;">
-  <div id='crm-container' class='crm-container cdashtabs-inject-section'>
+  <div id="crm-container" class="crm-container cdashtabs-inject-section">
     <table>
       <tbody>
-        <tr class='crm-dashboard-{$profileName}'>
+        <tr class="crm-dashboard-{$profileName}">
           <td>
-            <div class='header-dark'>{$profileTitle}</div>
+            <div class="header-dark"><a class="cdashtabs-section-anchor" id="section-{$profileName}"></a>{$profileTitle}</div>
             {if $is_show_pre_post && $help_pre}
               <div class="messages help">
                 {$help_pre}
               </div>
             {/if}
-            <div class='view-content'>
-              <div class='crm-profile-name-{$profileName}'>{$profileContent}</div>
+            <div class="view-content">
+              <div class="crm-profile-name-{$profileName}">{$profileContent}</div>
             </div>
             {if $is_show_pre_post && $help_post}
               <div class="messages help">

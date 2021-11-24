@@ -1,3 +1,10 @@
+// Immediately hide all section-anchor links, so that browser anchor behavior
+// does not cause page scrolling. Without this, the browser will scroll to the
+// named anchor immediately, such that the page may be inappropriately scrolled
+// down even after sections are hidden behind buttons. (This undesirable behavior
+// was visible when being redirected to dashboard after submitting a profile.)
+CRM.$('a.cdashtabs-section-anchor').hide();
+
 CRM.$(function($){
   // This code runs only if we're configured to use tabs on the dashboard.
 
@@ -13,7 +20,8 @@ CRM.$(function($){
   // Create a tab button for each configured section.
   for (var i in CRM.vars.cdashtabs.tabButtons) {
     // Append button with data-target and label
-    cdashtabsButtonsDiv.append('<button data-target="crm-dashboard-' + CRM.vars.cdashtabs.tabButtons[i].cssClass + '">' + CRM.vars.cdashtabs.tabButtons[i].tabLabel + '</button>');
+    var cssClass = CRM.vars.cdashtabs.tabButtons[i].cssClass;
+    cdashtabsButtonsDiv.append('<button id="cdashtabs-section-' + cssClass + '" data-target="crm-dashboard-' + cssClass + '">' + CRM.vars.cdashtabs.tabButtons[i].tabLabel + '</button>');
   }
 
   // Add button show/hide row functionality when clicked
@@ -34,6 +42,14 @@ CRM.$(function($){
     $(this).addClass('cdashtabs-is-active');
   });
 
-  // Show first row element.
-  cdashtabsButtonsDiv.find('button:first-child').trigger('click');
+  // If we're requested to reveal a specific section, do it.
+  var requestedSectionIdentifier = cdashtabsAnchor.replace(/^#/, '');
+  if (requestedSectionIdentifier) {
+    var requestedSectionButtonId = 'cdashtabs-' + requestedSectionIdentifier;
+    cdashtabsButtonsDiv.find('button#' + requestedSectionButtonId).trigger('click');
+  }
+  else {
+    // Otherwise, just reveal the first section.
+    cdashtabsButtonsDiv.find('button:first-child').trigger('click');
+  }
 });

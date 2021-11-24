@@ -76,7 +76,7 @@ function cdashtabs_civicrm_buildForm($formName, &$form) {
         'reset' => 1,
         'id' => $id,
       ];
-      $dashUrl = CRM_Utils_System::url($cdashtabsdest, $dashQuery, TRUE, "profile-{$gid}");
+      $dashUrl = CRM_Utils_System::url($cdashtabsdest, $dashQuery, TRUE, "section-{$gid}");
       // Define the destination for the Cancel button.
       $form->assign('cancelURL', $dashUrl);
       // Define the destination upon processing submitted form.
