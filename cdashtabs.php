@@ -25,6 +25,7 @@ function cdashtabs_civicrm_buildForm($formName, &$form) {
       'placeholder' => E::ts('Select contact types'),
     ]);
     $form->addElement('checkbox', 'is_show_pre_post', E::ts('Display pre- and post-help on Contact Dashboard?'));
+    $form->addElement('checkbox', 'is_edit', E::ts('Provide "Edit" button?'));
 
     // Assign bhfe fields to the template, so our new field has a place to live.
     $tpl = CRM_Core_Smarty::singleton();
@@ -35,6 +36,7 @@ function cdashtabs_civicrm_buildForm($formName, &$form) {
     $bhfe[] = 'is_cdash';
     $bhfe[] = 'cdash_contact_type';
     $bhfe[] = 'is_show_pre_post';
+    $bhfe[] = 'is_edit';
     $form->assign('beginHookFormElements', $bhfe);
 
     // Add javascript that will relocate our field to a sensible place in the form.
@@ -48,6 +50,7 @@ function cdashtabs_civicrm_buildForm($formName, &$form) {
         'is_cdash' => $settings['is_cdash'],
         'cdash_contact_type' => $settings['cdash_contact_type'],
         'is_show_pre_post' => $settings['is_show_pre_post'],
+        'is_edit' => $settings['is_edit'],
       );
       $form->setDefaults($defaults);
     }
@@ -107,6 +110,7 @@ function cdashtabs_civicrm_postProcess($formName, &$form) {
     $settings['is_cdash'] = $form->_submitValues['is_cdash'];
     $settings['cdash_contact_type'] = $form->_submitValues['cdash_contact_type'];
     $settings['is_show_pre_post'] = $form->_submitValues['is_show_pre_post'];
+    $settings['is_edit'] = $form->_submitValues['is_edit'];
     CRM_Cdashtabs_Settings::saveAllSettings($gid, $settings, 'uf_group');
   }
 }
@@ -459,12 +463,12 @@ function cdashtabs_civicrm_alterContent(&$content, $context, $tplName, &$object)
       $tpl->assign('profileTitle', $groupTitle);
       $tpl->assign('profileContent', $profileContent);
       $tpl->assign('is_show_pre_post', $cdashProfileSetting['is_show_pre_post']);
+      $tpl->assign('is_edit', $cdashProfileSetting['is_edit']);
       $tpl->assign('help_pre', $ufGroup['help_pre']);
       $tpl->assign('help_post', $ufGroup['help_post']);
 
       $tpl->assign('ufId', $ufId);
       $tpl->assign('userContactId', $userContactId);
-      $tpl->assign('is_edit', $cdashProfileSetting['is_edit']);
       $tpl->assign('cdashtabsdest', CRM_Cdashtabs_Utils::getDashboardBaseUrl());
 
       $cdashContent = $tpl->fetch('CRM/Cdashtabs/snippet/injectedProfile.tpl');

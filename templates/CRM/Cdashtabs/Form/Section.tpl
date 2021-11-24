@@ -36,6 +36,10 @@
             <td class="label">{$form.is_show_pre_post.label}</td>
             <td>{$form.is_show_pre_post.html}</td>
           </tr>
+          <tr class="crm-admin-options-form-block-is_edit">
+            <td class="label">{$form.is_edit.label}</td>
+            <td>{$form.is_edit.html}</td>
+          </tr>
         {/if}
         <tr class="crm-admin-options-form-block-weight">
           <td class="label">{$form.weight.label}</td>

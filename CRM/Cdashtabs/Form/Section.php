@@ -132,6 +132,11 @@ class CRM_Cdashtabs_Form_Section extends CRM_Core_Form {
         E::ts('Display pre- and post-help on Contact Dashboard?')
       );
 
+      $this->add('checkbox',
+        'is_edit',
+        E::ts('Provide "Edit" button?')
+      );
+
       CRM_Core_Resources::singleton()->addScriptFile('com.joineryhq.cdashtabs', 'js/CRM_Cdashtabs_Form_Section-uf_group.js', 100, 'page-footer');
 
     }
@@ -193,6 +198,10 @@ class CRM_Cdashtabs_Form_Section extends CRM_Core_Form {
 
       if ($values->is_show_pre_post !== $formParams['is_show_pre_post']) {
         $values->is_show_pre_post = $formParams['is_show_pre_post'];
+      }
+
+      if ($values->is_edit !== $formParams['is_edit']) {
+        $values->is_edit = $formParams['is_edit'];
       }
 
       $apiParams['value'] = json_encode($values);
