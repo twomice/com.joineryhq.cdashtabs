@@ -5,9 +5,9 @@ CRM.$(function($){
   // Check if any sections have been injected on the page.
   // this would have been done in cdashtabs_civicrm_alterContent().
   // (We test length here on a hunch that it may improve performance.)
-  if ($('div.cdash-inject-section').length) {
+  if ($('div.cdashtabs-inject-section').length) {
     // For each injected section, move it into the main table.
-    $('div.cdash-inject-section').each(function(){
+    $('div.cdashtabs-inject-section').each(function(){
       var injectHtml = $('> table > tbody' ,this).html();
       $('.dashboard-elements > tbody').append(injectHtml);
     });

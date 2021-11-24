@@ -12,3 +12,7 @@ table.dashboard-elements > tbody > tr {
 #cdashtabsButtons button.cdashtabs-is-active {
   background-color: #fff;
 }
+
+div.cdashtabs-profile-buttons.crm-submit-buttons {
+  margin-top: 16px;
+}

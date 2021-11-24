@@ -56,24 +56,28 @@ function cdashtabs_civicrm_buildForm($formName, &$form) {
     // Check whether the form has a specified cdashtabs destination (could be in GET or POST).
     $cdashtabsdest = CRM_Utils_Request::retrieve('cdashtabsdest', 'String');
     if (!empty($cdashtabsdest)) {
-      if (!$form->_flagSubmitted) {
-        // We're loading the form for editing (this is not a submitted form). Therefore
-        // we need to store cdashtabsdest as a hidden field so that it's passed
-        // back to us upon submisison.
-        $form->addElement('hidden', 'cdashtabsdest', $cdashtabsdest);
-      }
-      else {
-        // We're processing a submitted form. Therefore we need to instruct the
-        // form to redirect to our cdashtabs destination.
-        $gid = CRM_Utils_Request::retrieve('gid', 'Int', $form, TRUE);
-        $id = CRM_Utils_Request::retrieve('id', 'Int', $form, TRUE);
-        $dashQuery = [
-          'reset' => 1,
-          'id' => $id,
-        ];
-        $dashUrl = CRM_Utils_System::url($cdashtabsdest, $dashQuery, TRUE, "profile-{$gid}");
-        $form->controller->_destination = $dashUrl;
-      }
+      // We've accessed this profile edit form through the user dashboard.
+      // Whether we're loading the form for edit, or we're processing a submitted
+      // form, we need to handle certain requirements for proper redirection
+      // to the user dashboard.
+
+      // Store cdashtabsdest as a hidden field so that it's passed back to us upon submisison.
+      // (This step is really only needed when building the form for display.)
+      $form->addElement('hidden', 'cdashtabsdest', $cdashtabsdest);
+
+      // Determine the full url for our cdashtabs destination, and then instruct
+      // the form to redirect there.
+      $gid = CRM_Utils_Request::retrieve('gid', 'Int', $form, TRUE);
+      $id = CRM_Utils_Request::retrieve('id', 'Int', $form, TRUE);
+      $dashQuery = [
+        'reset' => 1,
+        'id' => $id,
+      ];
+      $dashUrl = CRM_Utils_System::url($cdashtabsdest, $dashQuery, TRUE, "profile-{$gid}");
+      // Define the destination for the Cancel button.
+      $form->assign('cancelURL', $dashUrl);
+      // Define the destination upon processing submitted form.
+      $form->controller->_destination = $dashUrl;
     }
   }
 }
@@ -319,7 +323,7 @@ function cdashtabs_civicrm_pageRun(&$page) {
 
     if ($displayDashboardLink && $page->getVar('_contactId') != CRM_Core_Session::singleton()->getLoggedInContactID()) {
       $jsVars = [
-        'dashboardLink' => CRM_Cdashtabs_Utils::getDashboardBaseUrl(),
+        'dashboardLink' => CRM_Cdashtabs_Utils::getDashboardBaseUrl() . "?reset=1",
       ];
       CRM_Core_Resources::singleton()->addVars('cdashtabs', $jsVars);
     }
@@ -457,6 +461,12 @@ function cdashtabs_civicrm_alterContent(&$content, $context, $tplName, &$object)
       $tpl->assign('is_show_pre_post', $cdashProfileSetting['is_show_pre_post']);
       $tpl->assign('help_pre', $ufGroup['help_pre']);
       $tpl->assign('help_post', $ufGroup['help_post']);
+
+      $tpl->assign('ufId', $ufId);
+      $tpl->assign('userContactId', $userContactId);
+      $tpl->assign('is_edit', $cdashProfileSetting['is_edit']);
+      $tpl->assign('cdashtabsdest', CRM_Cdashtabs_Utils::getDashboardBaseUrl());
+
       $cdashContent = $tpl->fetch('CRM/Cdashtabs/snippet/injectedProfile.tpl');
       $content .= $cdashContent;
     }
