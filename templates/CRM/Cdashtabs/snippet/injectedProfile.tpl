@@ -4,7 +4,7 @@
       <tbody>
         <tr class="crm-dashboard-{$profileName}">
           <td>
-            <div class="header-dark"><a class="cdashtabs-section-anchor" id="section-{$profileName}"></a>{$profileTitle}</div>
+            <div class="header-dark">{$profileTitle}</div>
             {if $is_show_pre_post && $help_pre}
               <div class="messages help">
                 {$help_pre}

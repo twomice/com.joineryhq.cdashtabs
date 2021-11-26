@@ -1,10 +1,3 @@
-// Immediately hide all section-anchor links, so that browser anchor behavior
-// does not cause page scrolling. Without this, the browser will scroll to the
-// named anchor immediately, such that the page may be inappropriately scrolled
-// down even after sections are hidden behind buttons. (This undesirable behavior
-// was visible when being redirected to dashboard after submitting a profile.)
-CRM.$('a.cdashtabs-section-anchor').hide();
-
 CRM.$(function($){
   // This code runs only if we're configured to use tabs on the dashboard.
 
