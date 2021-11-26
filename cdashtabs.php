@@ -73,14 +73,17 @@ function cdashtabs_civicrm_buildForm($formName, &$form) {
       $gid = CRM_Utils_Request::retrieve('gid', 'Int', $form, TRUE);
       $id = CRM_Utils_Request::retrieve('id', 'Int', $form, TRUE);
       $dashQuery = [
-        'reset' => 1,
         'id' => $id,
       ];
-      $dashUrl = CRM_Utils_System::url($cdashtabsdest, $dashQuery, TRUE, "section-{$gid}");
+      // Define the dashboard destination url, based on what's provided in $cdashtabsdest.
+      // We run this through urldecode because it was put through urlencode by previous processes.
+      // We run it through htmlspecialchars_decode because civicrm has (probably) replaced & with &amp;, which will,
+      // if not addressed here, cause CRM_Cdashtabs_Utils::alterUrl() to parse it improperly.
+      $dashUrl = CRM_Cdashtabs_Utils::alterUrl(htmlspecialchars_decode(urldecode($cdashtabsdest)), $dashQuery, 'section-' . $gid);
       // Define the destination for the Cancel button.
       $form->assign('cancelURL', $dashUrl);
       // Define the destination upon processing submitted form.
-      $form->controller->_destination = $dashUrl;
+      $form->controller->setDestination($dashUrl);
     }
   }
 }
@@ -326,8 +329,9 @@ function cdashtabs_civicrm_pageRun(&$page) {
     $displayDashboardLink = Civi::settings()->get('cdashtabs_dashboard_link');
 
     if ($displayDashboardLink && $page->getVar('_contactId') != CRM_Core_Session::singleton()->getLoggedInContactID()) {
+      $currentUrl = CRM_Cdashtabs_Utils::getCurrentBaseUrl();
       $jsVars = [
-        'dashboardLink' => CRM_Cdashtabs_Utils::getDashboardBaseUrl(TRUE),
+        'dashboardLink' => CRM_Cdashtabs_Utils::alterUrl($currentUrl, ['reset' => 1, 'id' => NULL]),
       ];
       CRM_Core_Resources::singleton()->addVars('cdashtabs', $jsVars);
     }
@@ -469,7 +473,7 @@ function cdashtabs_civicrm_alterContent(&$content, $context, $tplName, &$object)
 
       $tpl->assign('ufId', $ufId);
       $tpl->assign('userContactId', $dashboardContactId);
-      $tpl->assign('cdashtabsdest', CRM_Cdashtabs_Utils::getDashboardBaseUrl());
+      $tpl->assign('cdashtabsdest', urlencode(CRM_Cdashtabs_Utils::getCurrentBaseUrl()));
 
       $cdashContent = $tpl->fetch('CRM/Cdashtabs/snippet/injectedProfile.tpl');
       $content .= $cdashContent;
