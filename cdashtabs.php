@@ -327,7 +327,7 @@ function cdashtabs_civicrm_pageRun(&$page) {
 
     if ($displayDashboardLink && $page->getVar('_contactId') != CRM_Core_Session::singleton()->getLoggedInContactID()) {
       $jsVars = [
-        'dashboardLink' => CRM_Cdashtabs_Utils::getDashboardBaseUrl() . "?reset=1",
+        'dashboardLink' => crm_utils_system::url(CRM_Cdashtabs_Utils::getDashboardBaseUrl(), "reset=1"),
       ];
       CRM_Core_Resources::singleton()->addVars('cdashtabs', $jsVars);
     }
@@ -419,13 +419,13 @@ function cdashtabs_civicrm_alterContent(&$content, $context, $tplName, &$object)
     // Get a list of settings-per-uf-group where is_cdash = TRUE.
     $cdashProfileSettings = CRM_Cdashtabs_Settings::getFilteredSettings(TRUE, 'uf_group');
 
-    $userContactId = NULL;
+    $dashboardContactId = NULL;
     if (!empty($cdashProfileSettings)) {
       // We need the current contact ID to display the profiles properly.
-      $userContactId = $object->_contactId;
+      $dashboardContactId = $object->_contactId;
     }
 
-    if (!$userContactId) {
+    if (!$dashboardContactId) {
       // If there's no know contact id, we can't display profiles, so return.
       return;
     }
@@ -454,7 +454,7 @@ function cdashtabs_civicrm_alterContent(&$content, $context, $tplName, &$object)
       }
 
       $groupTitle = $ufGroup['frontend_title'] ?? $ufGroup['title'];
-      $page = new CRM_Profile_Page_Dynamic($userContactId, $ufId, NULL, TRUE);
+      $page = new CRM_Profile_Page_Dynamic($dashboardContactId, $ufId, NULL, TRUE);
       $profileContent = $page->run();
       $ufGroupClass = strtolower(str_replace(' ', '-', $ufGroup['id']));
 
@@ -463,12 +463,12 @@ function cdashtabs_civicrm_alterContent(&$content, $context, $tplName, &$object)
       $tpl->assign('profileTitle', $groupTitle);
       $tpl->assign('profileContent', $profileContent);
       $tpl->assign('is_show_pre_post', $cdashProfileSetting['is_show_pre_post']);
-      $tpl->assign('is_edit', $cdashProfileSetting['is_edit']);
+      $tpl->assign('is_edit', ($cdashProfileSetting['is_edit'] && CRM_Contact_BAO_Contact_Permission::allowList([$dashboardContactId], 'edit')));
       $tpl->assign('help_pre', $ufGroup['help_pre']);
       $tpl->assign('help_post', $ufGroup['help_post']);
 
       $tpl->assign('ufId', $ufId);
-      $tpl->assign('userContactId', $userContactId);
+      $tpl->assign('userContactId', $dashboardContactId);
       $tpl->assign('cdashtabsdest', CRM_Cdashtabs_Utils::getDashboardBaseUrl());
 
       $cdashContent = $tpl->fetch('CRM/Cdashtabs/snippet/injectedProfile.tpl');
