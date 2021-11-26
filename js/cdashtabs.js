@@ -21,7 +21,7 @@ CRM.$(function($){
   for (var i in CRM.vars.cdashtabs.tabButtons) {
     // Append button with data-target and label
     var cssClass = CRM.vars.cdashtabs.tabButtons[i].cssClass;
-    cdashtabsButtonsDiv.append('<button id="cdashtabs-section-' + cssClass + '" data-target="crm-dashboard-' + cssClass + '">' + CRM.vars.cdashtabs.tabButtons[i].tabLabel + '</button>');
+    cdashtabsButtonsDiv.append('<button id="cdashtabs-section-' + cssClass + '" data-cdashtabs-section-id="' + cssClass + '">' + CRM.vars.cdashtabs.tabButtons[i].tabLabel + '</button>');
   }
 
   // Add button show/hide row functionality when clicked
@@ -32,14 +32,20 @@ CRM.$(function($){
     // Hide all rows in the main table.
     mainTable.children('tbody').children('tr').hide();
 
+    // Shorthand variable for button section identifier
+    var buttonSectionId = $(this).data('cdashtabs-section-id');
+
     // Display the relevant section.
-    var sectionTrClassName = $(this).data('target');
+    var sectionTrClassName = 'crm-dashboard-' + buttonSectionId;
+
     mainTable.find('.' + sectionTrClassName).show();
 
     // Mark all tab buttons as inactive.
     cdashtabsButtonsDiv.find('button').removeClass('cdashtabs-is-active');
     // Mark this tab button as active.
     $(this).addClass('cdashtabs-is-active');
+    // Add section-X to anchor component in browser address bar.
+    CRM.$(location).attr('hash', 'section-' + buttonSectionId);
   });
 
   // If we're requested to reveal a specific section, do it.
