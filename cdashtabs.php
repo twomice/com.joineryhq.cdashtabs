@@ -330,8 +330,25 @@ function cdashtabs_civicrm_pageRun(&$page) {
 
     if ($displayDashboardLink && $page->getVar('_contactId') != CRM_Core_Session::singleton()->getLoggedInContactID()) {
       $currentUrl = CRM_Cdashtabs_Utils::getCurrentBaseUrl();
+      $dashQuery = [
+        'reset' => 1,
+        // Unset id so that we go back to the current user's dashboard
+        'id' => NULL,
+        // Unset civiwp. This is only relevant for WordPress, and is baed on the
+        // assumption that the dashboard is embedded in some specific WP page.
+        // On some WP sites, leaving civiwp in the query parameters will cause
+        // WP to treat the page differently (our observation was that some widgets
+        // were tied only to the specific page, and civiwp forces the civicrm
+        // base page, so that those widgets would not appear.)
+        // This assumption may be naive; if this becomes an issue for other sites,
+        // on which it's approprate to retain civiwp, we should probably resolve
+        // that by adding a new setting along the lines of 'Strip civiwp?'.
+        'civiwp' => NULL,
+      ];
+      $dashboardLink = CRM_Cdashtabs_Utils::alterUrl($currentUrl, $dashQuery);
       $jsVars = [
-        'dashboardLink' => CRM_Cdashtabs_Utils::alterUrl($currentUrl, ['reset' => 1, 'id' => NULL]),
+        // Specify query parameters, including some to be unset:
+        'dashboardLink' => $dashboardLink,
       ];
       CRM_Core_Resources::singleton()->addVars('cdashtabs', $jsVars);
     }
