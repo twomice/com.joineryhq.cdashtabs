@@ -14,8 +14,8 @@
     <url desc="Support">https://github.com/twomice/com.joineryhq.cdashtabshttps://github.com/twomice/com.joineryhq.cdashtabs/issues</url>
     <url desc="Licensing">http://www.gnu.org/licenses/gpl-3.0.html</url>
   </urls>
-  <releaseDate>2021-11-26</releaseDate>
-  <version>2.1.0</version>
+  <releaseDate>2021-11-29</releaseDate>
+  <version>2.1.1</version>
   <develStage>stable</develStage>
   <compatibility>
     <ver>5.0</ver>
