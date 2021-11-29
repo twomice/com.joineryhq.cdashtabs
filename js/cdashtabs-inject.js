@@ -7,13 +7,18 @@ CRM.$(function($){
   // (We test length here on a hunch that it may improve performance.)
   if ($('div.cdashtabs-inject-section').length) {
     // For each injected section, move it into the main table.
+    // We do this with append(html) because simply using append() does not yield
+    // correct formatting.
     $('div.cdashtabs-inject-section').each(function(){
-      var injectHtml = $('> table > tbody' ,this).html();
+      var elSection = CRM.$('> table > tbody' ,this);
+      var injectHtml = elSection.html();
       $('.dashboard-elements > tbody').append(injectHtml);
+      // Now that we've copied the html, remove the original section element from the DOM.
+      elSection.remove();
     });
   }
 
-  if (CRM.vars.cdashtabs.dashboardLink && !$('#cdashtabs-mydashboard-link').length) {
+  if (CRM.vars.cdashtabs && CRM.vars.cdashtabs.dashboardLink && !$('#cdashtabs-mydashboard-link').length) {
     $('#crm-container').before('<a id="cdashtabs-mydashboard-link" href="' + CRM.vars.cdashtabs.dashboardLink + '">Back to my dashboard</a>');
   }
 });
