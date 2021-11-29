@@ -16,6 +16,7 @@ class CRM_Cdashtabs_Settings {
   public static function getSettings($id, $type) {
     $settingName = "{$type}_{$id}";
     $result = \Civi\Api4\OptionValue::get()
+      ->setCheckPermissions(FALSE)
       ->addWhere('option_group_id:name', '=', 'cdashtabs')
       ->addWhere('name', '=', $settingName)
       ->execute();
@@ -37,6 +38,7 @@ class CRM_Cdashtabs_Settings {
   public static function saveAllSettings($id, $settings, $type) {
     $settingName = "{$type}_{$id}";
     $result = \Civi\Api4\OptionValue::get()
+      ->setCheckPermissions(FALSE)
       ->addWhere('option_group_id:name', '=', 'cdashtabs')
       ->addWhere('name', '=', $settingName)
       ->execute()
@@ -101,6 +103,7 @@ class CRM_Cdashtabs_Settings {
   public static function getProfileDisplayTitle($id) {
     $title = '';
     $ufGroups = \Civi\Api4\UFGroup::get()
+      ->setCheckPermissions(FALSE)
       ->addWhere('id', '=', $id)
       ->setLimit(1)
       ->execute();

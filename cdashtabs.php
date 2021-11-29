@@ -100,6 +100,7 @@ function cdashtabs_civicrm_postProcess($formName, &$form) {
     // saveAllSettings() assumes we're passing all setting values.)
     if (empty($gid)) {
       $uFGroup = \Civi\Api4\UFGroup::get()
+        ->setCheckPermissions(FALSE)
         ->addSelect('id')
         ->addWhere('title', '=', $form->_submitValues['title'])
         ->addOrderBy('id', 'DESC')
@@ -306,9 +307,9 @@ function cdashtabs_civicrm_navigationMenu(&$menu) {
  */
 function _cdashtabs_civicrm_checkContactType($contactId, $cdashContactTypes) {
   $contacts = \Civi\Api4\Contact::get()
+    ->setCheckPermissions(FALSE)
     ->addWhere('id', '=', $contactId)
     ->addClause('OR', ['contact_type', 'IN', $cdashContactTypes], ['contact_sub_type', 'IN', $cdashContactTypes])
-    ->setCheckPermissions(FALSE)
     ->execute();
 
   return (bool) $contacts->rowCount;
@@ -365,6 +366,7 @@ function cdashtabs_civicrm_pageRun(&$page) {
         ->setCheckPermissions(FALSE)
         ->addWhere('name', '=', 'cdashtabs')
         ->addChain('get_optionValue', \Civi\Api4\OptionValue::get()
+          ->setCheckPermissions(FALSE)
           ->addWhere('option_group_id', '=', '$id')
           ->addWhere('is_active', '=', TRUE)
           ->addOrderBy('weight', 'ASC'))
@@ -409,6 +411,7 @@ function cdashtabs_civicrm_pageRun(&$page) {
           // Exclude from buttons if profile no longer exists (because deleting a
           // profile will not remove the corresponding cdashtabs optionValue.)
           $uFGroup = \Civi\Api4\UFGroup::get()
+            ->setCheckPermissions(FALSE)
             ->addWhere('id', '=', $optionValueId)
             ->addOrderBy('id', 'DESC')
             ->execute()
@@ -466,6 +469,7 @@ function cdashtabs_civicrm_alterContent(&$content, $context, $tplName, &$object)
 
       $ufId = $cdashProfileSetting['uf_group_id'];
       $ufGroup = \Civi\Api4\UFGroup::get()
+        ->setCheckPermissions(FALSE)
         ->addWhere('id', '=', $ufId)
         ->execute()
         ->first();

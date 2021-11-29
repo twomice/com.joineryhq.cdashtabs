@@ -84,6 +84,7 @@ class CRM_Cdashtabs_Page_Section extends CRM_Core_Page {
         // if profile is deleted, because we can't clean up the optionValue because there's
         // no uggroup post hook (yet).
         $uFGroup = \Civi\Api4\UFGroup::get()
+          ->setCheckPermissions(FALSE)
           ->addWhere('id', '=', $optionId)
           ->addOrderBy('id', 'DESC')
           ->execute()

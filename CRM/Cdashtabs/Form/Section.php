@@ -207,7 +207,10 @@ class CRM_Cdashtabs_Form_Section extends CRM_Core_Form {
       $apiParams['value'] = json_encode($values);
     }
 
-    $results = civicrm_api4('OptionValue', 'update', ['values' => $apiParams]);
+    $results = civicrm_api4('OptionValue', 'update', [
+      'checkPermissions' => FALSE,
+      'values' => $apiParams,
+    ]);
 
     CRM_Core_Session::setStatus(E::ts('The %1 \'%2\' has been saved.', [
       1 => 'Contact Dashboard Tabs: Section',
