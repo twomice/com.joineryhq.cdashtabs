@@ -25,7 +25,7 @@ class CRM_Cdashtabs_Utils {
     $host     = isset($urlParts['host']) ? $urlParts['host'] : '';
     $port     = isset($urlParts['port']) ? ':' . $urlParts['port'] : '';
     $user     = isset($urlParts['user']) ? $urlParts['user'] : '';
-    $pass     = isset($urlParts['pass']) ? ':' . $urlParts['pass']  : '';
+    $pass     = isset($urlParts['pass']) ? ':' . $urlParts['pass'] : '';
     $pass     = ($user || $pass) ? "$pass@" : '';
     $path     = isset($urlParts['path']) ? $urlParts['path'] : '';
     $query    = isset($urlParts['query']) ? '?' . $urlParts['query'] : '';
@@ -33,4 +33,5 @@ class CRM_Cdashtabs_Utils {
     $ret = "$scheme$user$pass$host$port$path$query$fragment";
     return $ret;
   }
+
 }
