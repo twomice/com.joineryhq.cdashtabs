@@ -11,9 +11,12 @@ The extension is licensed under [GPL-3.0](LICENSE.txt).
 
 1. Simply enable this extension to cause the sections in the Contact Dashboard
 to display as tabs.
-2. Optionally, check the "Display on Contact Dashboard?" checkbox on any Profile
+2. For more settings and options, navigate to Administer > Customize Data and Screens > Contact Dashboard Tabs. Here you can:
+    - Adjust the display order (weight) of dashboard tabs.
+    - Click the "Settings" button to access additional options.
+3. Optionally, check the "Display on Contact Dashboard?" checkbox on any Profile
 to have that Profile also display (as a tab) on the Contact Dashboard.
-3. Optionally, where "Display on Contact Dashboard?" is checked for any Profile,
+4. Optionally, where "Display on Contact Dashboard?" is checked for any Profile,
 select one or more contact types in the "Display only for contacts of type" setting
 to limit display per contact type or sub-type.
 
