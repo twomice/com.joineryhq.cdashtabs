@@ -14,11 +14,11 @@
     <url desc="Support">https://github.com/twomice/com.joineryhq.cdashtabshttps://github.com/twomice/com.joineryhq.cdashtabs/issues</url>
     <url desc="Licensing">http://www.gnu.org/licenses/gpl-3.0.html</url>
   </urls>
-  <releaseDate>2023-07-06</releaseDate>
-  <version>2.1.3</version>
+  <releaseDate>2023-08-03</releaseDate>
+  <version>2.1.4</version>
   <develStage>stable</develStage>
   <compatibility>
-    <ver>5.38</ver>
+    <ver>5.58</ver>
   </compatibility>
   <comments>Displays Contact Dashboard as clickable tabs; adds "Display on Contact Dashboard?" checkbox on Profile configuration forms.</comments>
   <classloader>
