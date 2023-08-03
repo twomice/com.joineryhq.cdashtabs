@@ -17,7 +17,7 @@ class CRM_Cdashtabs_Settings {
     $settingName = "{$type}_{$id}";
     $result = \Civi\Api4\OptionValue::get()
       ->setCheckPermissions(FALSE)
-      ->addWhere('option_group_id:name', '=', 'cdashtabs')
+      ->addWhere('option_group_id.name', '=', 'cdashtabs')
       ->addWhere('name', '=', $settingName)
       ->execute();
 
@@ -39,7 +39,7 @@ class CRM_Cdashtabs_Settings {
     $settingName = "{$type}_{$id}";
     $result = \Civi\Api4\OptionValue::get()
       ->setCheckPermissions(FALSE)
-      ->addWhere('option_group_id:name', '=', 'cdashtabs')
+      ->addWhere('option_group_id.name', '=', 'cdashtabs')
       ->addWhere('name', '=', $settingName)
       ->execute()
       ->first();
@@ -125,7 +125,7 @@ class CRM_Cdashtabs_Settings {
 
     $optionValue = \Civi\Api4\OptionValue::get()
       ->setCheckPermissions(FALSE)
-      ->addWhere('option_group_id:name', '=', 'user_dashboard_options')
+      ->addWhere('option_group_id.name', '=', 'user_dashboard_options')
       ->addWhere('value', '=', $value)
       ->execute()
       ->first();

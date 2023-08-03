@@ -24,7 +24,7 @@ class CRM_Cdashtabs_Upgrader extends CRM_Extension_Upgrader_Base {
 
     $nativeUserDashboardOptions = \Civi\Api4\OptionValue::get()
       ->setCheckPermissions(FALSE)
-      ->addWhere('option_group_id:name', '=', 'user_dashboard_options')
+      ->addWhere('option_group_id.name', '=', 'user_dashboard_options')
       ->addWhere('value', '!=', 10)
       ->addOrderBy('weight', 'ASC')
       ->execute();
@@ -34,7 +34,7 @@ class CRM_Cdashtabs_Upgrader extends CRM_Extension_Upgrader_Base {
       // Copy user dashboard options to cdashtabs for tab order
       $newCdashtabsOption = \Civi\Api4\OptionValue::create()
         ->setCheckPermissions(FALSE)
-        ->addValue('option_group_id:name', 'cdashtabs')
+        ->addValue('option_group_id.name', 'cdashtabs')
         ->addValue('label', $option['label'])
         ->addValue('value', $option['value'])
         ->addValue('name', "native_{$option['value']}")
