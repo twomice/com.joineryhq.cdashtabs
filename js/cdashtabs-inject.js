@@ -19,6 +19,6 @@ CRM.$(function($){
   }
 
   if (CRM.vars.cdashtabs && CRM.vars.cdashtabs.dashboardLink && !$('#cdashtabs-mydashboard-link').length) {
-    $('#crm-container').before('<a id="cdashtabs-mydashboard-link" href="' + CRM.vars.cdashtabs.dashboardLink + '">Back to my dashboard</a>');
+    $('#crm-container').prepend('<a id="cdashtabs-mydashboard-link" href="' + CRM.vars.cdashtabs.dashboardLink + '">Back to my dashboard</a>');
   }
 });
