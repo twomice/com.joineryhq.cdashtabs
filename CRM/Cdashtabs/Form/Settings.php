@@ -187,7 +187,7 @@ class CRM_Cdashtabs_Form_Settings extends CRM_Core_Form {
   public function setDefaultValues() {
     $result = _cdashtabs_civicrmapi('setting', 'get', array('return' => array_keys($this->_settings)));
     $domainID = CRM_Core_Config::domainID();
-    $ret = CRM_Utils_Array::value($domainID, $result['values']);
+    $ret = $result['values'][$domainID] ?? NULL;
     return $ret;
   }
 
