@@ -46,7 +46,7 @@ class CRM_Cdashtabs_Settings {
 
     $createParams = array();
 
-    if ($optionValueId = CRM_Utils_Array::value('id', $result)) {
+    if ($optionValueId = $result['id'] ?? NULL) {
       $createParams['id'] = $optionValueId;
     }
     else {
