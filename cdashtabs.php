@@ -18,14 +18,14 @@ function cdashtabs_civicrm_buildForm($formName, &$form) {
     $selectArr = CRM_Contact_BAO_ContactType::getSelectElements(FALSE, FALSE);
 
     // Create new fields.
-    $form->addElement('checkbox', 'is_cdash', E::ts('Display on Contact Dashboard?'));
-    $form->add('select', 'cdash_contact_type', E::ts('Display only for contacts of type'), $selectArr, FALSE, [
+    $form->addElement('checkbox', 'cdashtabs_is_cdash', E::ts('Display on Contact Dashboard?'));
+    $form->add('select', 'cdashtabs_cdash_contact_type', E::ts('Display only for contacts of type'), $selectArr, FALSE, [
       'multiple' => 'multiple',
       'class' => 'crm-select2',
       'placeholder' => E::ts('Select contact types'),
     ]);
-    $form->addElement('checkbox', 'is_show_pre_post', E::ts('Display pre- and post-help on Contact Dashboard?'));
-    $form->addElement('checkbox', 'is_edit', E::ts('Provide "Edit" button?'));
+    $form->addElement('checkbox', 'cdashtabs_is_show_pre_post', E::ts('Display pre- and post-help on Contact Dashboard?'));
+    $form->addElement('checkbox', 'cdashtabs_is_edit', E::ts('Provide "Edit" button?'));
 
     // Assign bhfe fields to the template, so our new field has a place to live.
     $tpl = CRM_Core_Smarty::singleton();
@@ -33,10 +33,10 @@ function cdashtabs_civicrm_buildForm($formName, &$form) {
     if (!$bhfe) {
       $bhfe = array();
     }
-    $bhfe[] = 'is_cdash';
-    $bhfe[] = 'cdash_contact_type';
-    $bhfe[] = 'is_show_pre_post';
-    $bhfe[] = 'is_edit';
+    $bhfe[] = 'cdashtabs_is_cdash';
+    $bhfe[] = 'cdashtabs_cdash_contact_type';
+    $bhfe[] = 'cdashtabs_is_show_pre_post';
+    $bhfe[] = 'cdashtabs_is_edit';
     $form->assign('beginHookFormElements', $bhfe);
 
     // Add javascript that will relocate our field to a sensible place in the form.
@@ -47,10 +47,10 @@ function cdashtabs_civicrm_buildForm($formName, &$form) {
     if ($gid) {
       $settings = CRM_Cdashtabs_Settings::getSettings($gid, 'uf_group');
       $defaults = array(
-        'is_cdash' => $settings['is_cdash'],
-        'cdash_contact_type' => $settings['cdash_contact_type'],
-        'is_show_pre_post' => $settings['is_show_pre_post'],
-        'is_edit' => $settings['is_edit'],
+        'cdashtabs_is_cdash' => $settings['is_cdash'],
+        'cdashtabs_cdash_contact_type' => $settings['cdash_contact_type'],
+        'cdashtabs_is_show_pre_post' => $settings['is_show_pre_post'],
+        'cdashtabs_is_edit' => $settings['is_edit'],
       );
       $form->setDefaults($defaults);
     }
@@ -111,10 +111,10 @@ function cdashtabs_civicrm_postProcess($formName, &$form) {
     }
 
     $settings = CRM_Cdashtabs_Settings::getSettings($gid, 'uf_group');
-    $settings['is_cdash'] = $form->_submitValues['is_cdash'];
-    $settings['cdash_contact_type'] = $form->_submitValues['cdash_contact_type'];
-    $settings['is_show_pre_post'] = $form->_submitValues['is_show_pre_post'];
-    $settings['is_edit'] = $form->_submitValues['is_edit'];
+    $settings['is_cdash'] = $form->_submitValues['cdashtabs_is_cdash'];
+    $settings['cdash_contact_type'] = $form->_submitValues['cdashtabs_cdash_contact_type'];
+    $settings['is_show_pre_post'] = $form->_submitValues['cdashtabs_is_show_pre_post'];
+    $settings['is_edit'] = $form->_submitValues['cdashtabs_is_edit'];
     CRM_Cdashtabs_Settings::saveAllSettings($gid, $settings, 'uf_group');
   }
 }
