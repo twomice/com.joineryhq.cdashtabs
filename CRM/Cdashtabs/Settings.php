@@ -72,7 +72,7 @@ class CRM_Cdashtabs_Settings {
    * @param string $type Entity type ('uf_group' or 'native')
    *
    */
-  public static function getFilteredSettings($isCdash = NULL, $type) {
+  public static function getFilteredSettings($isCdash = NULL, $type = "") {
     $filteredSettings = [];
     // Get cdashtabs optionGroup and all of its optionValues.
     $optionGroup = \Civi\Api4\OptionGroup::get()
@@ -85,8 +85,9 @@ class CRM_Cdashtabs_Settings {
       $optionSettingJson = $optionValue['value'] ?? '{}';
       $optionSettings = json_decode($optionSettingJson, TRUE);
       if (
-        $optionSettings["{$type}_id"]
-        && ($isCdash === NULL || ($optionSettings['is_cdash'] ?? 0) == intval($isCdash))
+        is_array($optionSettings) &&
+        !empty($optionSettings["{$type}_id"]) &&
+        ($isCdash === NULL || ($optionSettings['is_cdash'] ?? 0) == intval($isCdash))
       ) {
         $filteredSettings[] = $optionSettings;
       }
