@@ -14,29 +14,18 @@ function cdashtabs_civicrm_buildForm($formName, &$form) {
 
   // For the Profile edit settings form, add our custom configuration field.
   if ($formName == 'CRM_UF_Form_Group') {
-    // Get contact types
-    $selectArr = CRM_Contact_BAO_ContactType::getSelectElements(FALSE, FALSE);
-
     // Create new fields.
-    $form->addElement('checkbox', 'cdashtabs_is_cdash', E::ts('Display on Contact Dashboard?'));
-    $form->add('select', 'cdashtabs_cdash_contact_type', E::ts('Display only for contacts of type'), $selectArr, FALSE, [
-      'multiple' => 'multiple',
-      'class' => 'crm-select2',
-      'placeholder' => E::ts('Select contact types'),
-    ]);
-    $form->addElement('checkbox', 'cdashtabs_is_show_pre_post', E::ts('Display pre- and post-help on Contact Dashboard?'));
-    $form->addElement('checkbox', 'cdashtabs_is_edit', E::ts('Provide "Edit" button?'));
+    $cdashtabsFieldNames = CRM_Cdashtabs_Utils::addFieldsToProfileForm($form, TRUE);
 
     // Assign bhfe fields to the template, so our new field has a place to live.
     $tpl = CRM_Core_Smarty::singleton();
     $bhfe = $tpl->get_template_vars('beginHookFormElements');
     if (!$bhfe) {
-      $bhfe = array();
+      $bhfe = [];
     }
-    $bhfe[] = 'cdashtabs_is_cdash';
-    $bhfe[] = 'cdashtabs_cdash_contact_type';
-    $bhfe[] = 'cdashtabs_is_show_pre_post';
-    $bhfe[] = 'cdashtabs_is_edit';
+    foreach ($cdashtabsFieldNames as $cdashtabsFieldName) {
+      $bhfe[] = $cdashtabsFieldName;
+    }
     $form->assign('beginHookFormElements', $bhfe);
 
     // Add javascript that will relocate our field to a sensible place in the form.
@@ -46,12 +35,11 @@ function cdashtabs_civicrm_buildForm($formName, &$form) {
     $gid = $form->getVar('_id');
     if ($gid) {
       $settings = CRM_Cdashtabs_Settings::getSettings($gid, 'uf_group');
-      $defaults = array(
-        'cdashtabs_is_cdash' => $settings['is_cdash'],
-        'cdashtabs_cdash_contact_type' => $settings['cdash_contact_type'],
-        'cdashtabs_is_show_pre_post' => $settings['is_show_pre_post'],
-        'cdashtabs_is_edit' => $settings['is_edit'],
-      );
+      $defaults = [];
+      foreach ($cdashtabsFieldNames as $cdashtabsFieldName) {
+        $unPrefixedFieldName = CRM_Cdashtabs_Utils::stripProfileFormFieldPrefix($cdashtabsFieldName);
+        $defaults[$cdashtabsFieldName] = $settings[$unPrefixedFieldName];
+      }
       $form->setDefaults($defaults);
     }
   }

@@ -114,28 +114,7 @@ class CRM_Cdashtabs_Form_Section extends CRM_Core_Form {
         '1' => $profileUrl,
       ));
 
-      // Get contact types
-      $selectArr = CRM_Contact_BAO_ContactType::getSelectElements(FALSE, FALSE);
-
-      $this->add('checkbox',
-        'is_cdash',
-        E::ts('Display on Contact Dashboard?')
-      );
-
-      $this->add('select', 'cdash_contact_type', E::ts('Display only for contacts of type'), $selectArr, FALSE, [
-        'multiple' => 'multiple',
-        'class' => 'crm-select2',
-      ]);
-
-      $this->add('checkbox',
-        'is_show_pre_post',
-        E::ts('Display pre- and post-help on Contact Dashboard?')
-      );
-
-      $this->add('checkbox',
-        'is_edit',
-        E::ts('Provide "Edit" button?')
-      );
+      $cdashtabsFieldNames = CRM_Cdashtabs_Utils::addFieldsToProfileForm($this, FALSE);
 
       CRM_Core_Resources::singleton()->addScriptFile('com.joineryhq.cdashtabs', 'js/CRM_Cdashtabs_Form_Section-uf_group.js', 100, 'page-footer');
 
@@ -205,6 +184,11 @@ class CRM_Cdashtabs_Form_Section extends CRM_Core_Form {
       }
 
       $apiParams['value'] = json_encode($values);
+
+      // Before saving, ensure our settings are not too long to save.
+      // TODO: refactor data structure to a table instead of json, to avoid varchar length limitations.
+      CRM_Cdashtabs_Utils::validateSettingsLength($apiParams['value']);
+
     }
 
     $results = civicrm_api4('OptionValue', 'update', [

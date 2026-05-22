@@ -61,6 +61,10 @@ class CRM_Cdashtabs_Settings {
     $settings["{$type}_id"] = $id;
     $createParams['value'] = json_encode($settings);
 
+    // Before saving, ensure our settings are not too long to save.
+    // TODO: refactor data structure to a table instead of json, to avoid varchar length limitations.
+    CRM_Cdashtabs_Utils::validateSettingsLength($createParams['value']);
+
     civicrm_api3('optionValue', 'create', $createParams);
   }
 
