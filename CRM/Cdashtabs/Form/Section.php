@@ -167,20 +167,17 @@ class CRM_Cdashtabs_Form_Section extends CRM_Core_Form {
       $apiParams['label'] = $formParams['label'];
     }
     else {
-      if ($values->is_cdash !== $formParams['is_cdash']) {
-        $values->is_cdash = $formParams['is_cdash'];
-      }
-
-      if ($values->cdash_contact_type !== $formParams['cdash_contact_type']) {
-        $values->cdash_contact_type = $formParams['cdash_contact_type'];
-      }
-
-      if ($values->is_show_pre_post !== $formParams['is_show_pre_post']) {
-        $values->is_show_pre_post = $formParams['is_show_pre_post'];
-      }
-
-      if ($values->is_edit !== $formParams['is_edit']) {
-        $values->is_edit = $formParams['is_edit'];
+      $cdashtabsValueNames = [
+        'is_cdash',
+        'cdash_contact_type',
+        'group',
+        'is_show_pre_post',
+        'is_edit',
+      ];
+      foreach ($cdashtabsValueNames as $cdashtabsValueName) {
+        if ($values->$cdashtabsValueName !== $formParams[$cdashtabsValueName]) {
+          $values->$cdashtabsValueName = $formParams[$cdashtabsValueName];
+        }
       }
 
       $apiParams['value'] = json_encode($values);

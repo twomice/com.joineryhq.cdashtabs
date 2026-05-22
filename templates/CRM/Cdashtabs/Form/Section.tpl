@@ -29,7 +29,13 @@
           <tr class="crm-admin-options-form-block-cdash_contact_type">
             <td class="label">{$form.cdash_contact_type.label}</td>
             <td>{$form.cdash_contact_type.html}<br />
-              <span class="description">{ts}Leave blank to display for all contacts.{/ts}</span>
+              <span class="description">{ts}Leave blank to display regardless of contact type.{/ts}</span>
+            </td>
+          </tr>
+          <tr class="crm-admin-options-form-block-group">
+            <td class="label">{$form.group.label}</td>
+            <td>{$form.group.html}<br />
+              <span class="description">{ts}Leave blank to display regardless of contact groups.{/ts}</span>
             </td>
           </tr>
           <tr class="crm-admin-options-form-block-is_show_pre_post">

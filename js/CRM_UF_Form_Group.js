@@ -4,6 +4,7 @@ CRM.$(function($) {
   // Move bhfe form elements into main form.
   CRM.$('tr.crm-ufgroup-form-block-uf_group_type').after(CRM.$('input#cdashtabs_is_edit').closest('tr'));
   CRM.$('tr.crm-ufgroup-form-block-uf_group_type').after(CRM.$('input#cdashtabs_is_show_pre_post').closest('tr'));
+  CRM.$('tr.crm-ufgroup-form-block-uf_group_type').after(CRM.$('select#cdashtabs_group').closest('tr'));
   CRM.$('tr.crm-ufgroup-form-block-uf_group_type').after(CRM.$('select#cdashtabs_cdash_contact_type').closest('tr'));
   CRM.$('tr.crm-ufgroup-form-block-uf_group_type').after(CRM.$('input#cdashtabs_is_cdash').closest('tr'));
   // Remove the bhfe table, but only if it's empty.

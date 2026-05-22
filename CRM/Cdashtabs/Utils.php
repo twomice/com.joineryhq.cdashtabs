@@ -51,19 +51,19 @@ class CRM_Cdashtabs_Utils {
 
     $fieldNameContactType = $prefix . 'cdash_contact_type';
     $contactTypeOptions = CRM_Contact_BAO_ContactType::getSelectElements(FALSE, FALSE);
-    $form->add('select', $fieldNameContactType, E::ts('Display only for contacts of type'), $contactTypeOptions, FALSE, [
+    $form->add('select', $fieldNameContactType, E::ts('Display only for contacts of type(s)'), $contactTypeOptions, FALSE, [
       'multiple' => 'multiple',
       'class' => 'crm-select2',
       'placeholder' => E::ts('Select contact types'),
     ]);
     $ret[] = $fieldNameContactType;
 
-    $fieldNameGroup = $prefix . 'cdash_group';
-    $contactTypeOptions = CRM_Contact_BAO_ContactType::getSelectElements(FALSE, FALSE);
-    $form->add('select', $fieldNameGroup, E::ts('Display only for contacts of type'), $contactTypeOptions, FALSE, [
+    $fieldNameGroup = $prefix . 'group';
+    $groupOptions = CRM_Core_PseudoConstant::nestedGroup();
+    $form->add('select', $fieldNameGroup, E::ts('Display only for contacts in group(s)'), $groupOptions, FALSE, [
       'multiple' => 'multiple',
       'class' => 'crm-select2',
-      'placeholder' => E::ts('Select contact types'),
+      'placeholder' => E::ts('Select groups'),
     ]);
     $ret[] = $fieldNameGroup;
 

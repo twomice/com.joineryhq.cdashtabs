@@ -101,6 +101,7 @@ function cdashtabs_civicrm_postProcess($formName, &$form) {
     $settings = CRM_Cdashtabs_Settings::getSettings($gid, 'uf_group');
     $settings['is_cdash'] = $form->_submitValues['cdashtabs_is_cdash'];
     $settings['cdash_contact_type'] = $form->_submitValues['cdashtabs_cdash_contact_type'];
+    $settings['group'] = $form->_submitValues['cdashtabs_group'];
     $settings['is_show_pre_post'] = $form->_submitValues['cdashtabs_is_show_pre_post'];
     $settings['is_edit'] = $form->_submitValues['cdashtabs_is_edit'];
     CRM_Cdashtabs_Settings::saveAllSettings($gid, $settings, 'uf_group');
@@ -176,7 +177,7 @@ function cdashtabs_civicrm_navigationMenu(&$menu) {
 }
 
 /**
- * Check Contact Type
+ * Check Contact Type: is contact of one of these types?
  * @param $contactId of contact dashboard
  * @param $cdashContactTypeIds
  *
@@ -189,6 +190,22 @@ function _cdashtabs_civicrm_checkContactType($contactId, $cdashContactTypes) {
     ->addClause('OR', ['contact_type', 'IN', $cdashContactTypes], ['contact_sub_type', 'IN', $cdashContactTypes])
     ->execute();
 
+  return (bool) $contacts->rowCount;
+}
+
+/**
+ * Check Group: is contact in one of these groups?
+ * @param $contactId of contact dashboard
+ * @param $cdashGroups
+ *
+ * @return boolean
+ */
+function _cdashtabs_civicrm_checkGroup($contactId, $cdashGroups) {
+  $contacts = \Civi\Api4\Contact::get(TRUE)
+    ->addWhere('groups', 'IN', $cdashGroups)
+    ->addWhere('id', '=', $contactId)
+    ->setLimit(25)
+    ->execute();
   return (bool) $contacts->rowCount;
 }
 
@@ -281,6 +298,12 @@ function cdashtabs_civicrm_pageRun(&$page) {
               continue;
             }
           }
+          if ($cdashProfileSetting['group']) {
+            // Skip if contactid contact is not in the required group(s)
+            if (!_cdashtabs_civicrm_checkGroup($object->_contactId, $cdashProfileSetting['group'])) {
+              continue;
+            }
+          }
 
           $tabButtons[$key]['tabLabel'] = CRM_Cdashtabs_Settings::getProfileDisplayTitle($optionValueId);
           $tabButtons[$key]['cssClass'] = $optionValueId;
@@ -340,6 +363,12 @@ function cdashtabs_civicrm_alterContent(&$content, $context, $tplName, &$object)
       if ($cdashProfileSetting['cdash_contact_type']) {
         // Skip if contactid contact type is not in the cdash_contact_type
         if (!_cdashtabs_civicrm_checkContactType($object->_contactId, $cdashProfileSetting['cdash_contact_type'])) {
+          continue;
+        }
+      }
+      if ($cdashProfileSetting['group']) {
+        // Skip if contactid contact is not in the required group(s)
+        if (!_cdashtabs_civicrm_checkGroup($object->_contactId, $cdashProfileSetting['group'])) {
           continue;
         }
       }
