@@ -1,3 +1,8 @@
+## v2.1.7
+
+- Bug-fix: Fatal error when viewing profile-type tabs.
+
+
 ## v2.1.6
 
 - Add (and use) new per-tab setting 'Display only for contacts in group(s)'.
