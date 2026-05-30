@@ -394,7 +394,7 @@ function cdashtabs_civicrm_alterContent(&$content, $context, $tplName, &$object)
       $tpl->assign('profileTitle', $groupTitle);
       $tpl->assign('profileContent', $profileContent);
       $tpl->assign('is_show_pre_post', $cdashProfileSetting['is_show_pre_post']);
-      $tpl->assign('is_edit', ($cdashProfileSetting['is_edit'] && CRM_Contact_BAO_Contact_Permission::allowList([$dashboardContactId], 'edit')));
+      $tpl->assign('is_edit', ($cdashProfileSetting['is_edit'] && CRM_Contact_BAO_Contact_Permission::allowList([$dashboardContactId], CRM_Core_Permission::EDIT)));
       $tpl->assign('help_pre', $ufGroup['help_pre']);
       $tpl->assign('help_post', $ufGroup['help_post']);
 
