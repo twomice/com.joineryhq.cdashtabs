@@ -59,7 +59,7 @@ class CRM_Cdashtabs_Utils {
     $ret[] = $fieldNameContactType;
 
     $fieldNameGroup = $prefix . 'group';
-    $groupOptions = CRM_Core_PseudoConstant::nestedGroup();
+    $groupOptions = CRM_Core_PseudoConstant::nestedGroup(TRUE, NULL, TRUE, "plain");
     $form->add('select', $fieldNameGroup, E::ts('Display only for contacts in group(s)'), $groupOptions, FALSE, [
       'multiple' => 'multiple',
       'class' => 'crm-select2',
