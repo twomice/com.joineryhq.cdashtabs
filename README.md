@@ -18,9 +18,10 @@ to display as tabs.
 to have that Profile also display (as a tab) on the Contact Dashboard.
 4. Optionally, where "Display on Contact Dashboard?" is checked for any Profile,
 limit the display of this Profile to certain contacts by:
-    - selecting one or more contact types in the "Display only for contacts of type(s)" setting to limit display only for contacts of certain type or sub-type.
+    - selecting one or more contact types in the "Display only for contacts of type(s)"
+      setting to limit display only for contacts of certain type or sub-type.
     - selecting one or more contact types in the "Display only for contacts in group(s)"
-    setting to limit display only for contacts who are in one or more groups.
+      setting to limit display only for contacts who are in one or more groups.
 
 ## Caveats
 
