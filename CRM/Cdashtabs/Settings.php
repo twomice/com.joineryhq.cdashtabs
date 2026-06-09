@@ -71,12 +71,12 @@ class CRM_Cdashtabs_Settings {
   /**
    * Get an array of saved settings-per-section, filtered per the given criteria.
    *
+   * @param string $type Entity type ('uf_group' or 'native')
    * @param boolean $isCdash If given, filter only for settings-per-section where
    *    the setting value is_cdash matches the given value.
-   * @param string $type Entity type ('uf_group' or 'native')
    *
    */
-  public static function getFilteredSettings($isCdash = NULL, $type) {
+  public static function getFilteredSettings($type, $isCdash = NULL) {
     $filteredSettings = [];
     // Get cdashtabs optionGroup and all of its optionValues.
     $optionGroup = \Civi\Api4\OptionGroup::get()
