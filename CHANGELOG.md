@@ -1,3 +1,8 @@
+## v2.1.8
+
+- Settings:getFilteredSettings(): re-order params for proper placement of default/optional params.
+
+
 ## v2.1.7
 
 - Bug-fix: Fatal error when viewing profile-type tabs.
