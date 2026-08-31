@@ -1,3 +1,8 @@
+## v2.1.9
+
+- Indicate support for civicrm 6.x
+
+
 ## v2.1.8
 
 - Settings:getFilteredSettings(): re-order params for proper placement of default/optional params.
