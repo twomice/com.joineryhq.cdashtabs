@@ -83,7 +83,7 @@ class CRM_Cdashtabs_Upgrader extends CRM_Extension_Upgrader_Base {
           ->execute();
       }
     }
-    catch (API_Exception $e) {
+    catch (CRM_Core_Exception $e) {
     }
   }
 
