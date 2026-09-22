@@ -110,9 +110,9 @@ class CRM_Cdashtabs_Form_Section extends CRM_Core_Form {
       $optionDetails['type'] = E::ts('Profile');
       $profileUrl = CRM_Utils_System::url('/civicrm/admin/uf/group/update', "action=update&id={$this->_sectionId}&context=group", TRUE);
       $optionDetails['label'] = CRM_Cdashtabs_Settings::getProfileDisplayTitle($this->_sectionId);
-      $optionDetails['labelDesc'] = E::ts('To edit the profile title, please <a href="%1">edit this profile Settings</a>.', array(
+      $optionDetails['labelDesc'] = E::ts('To edit the profile title, please <a href="%1">edit this profile Settings</a>.', [
         '1' => $profileUrl,
-      ));
+      ]);
 
       $cdashtabsFieldNames = CRM_Cdashtabs_Utils::addFieldsToProfileForm($this, FALSE);
 
@@ -129,17 +129,17 @@ class CRM_Cdashtabs_Form_Section extends CRM_Core_Form {
 
     $this->addRule('weight', E::ts('is a numeric field'), 'numeric');
 
-    $this->addButtons(array(
-      array(
+    $this->addButtons([
+      [
         'type' => 'submit',
         'name' => E::ts('Submit'),
         'isDefault' => TRUE,
-      ),
-      array(
+      ],
+      [
         'type' => 'cancel',
         'name' => E::ts('Cancel'),
-      ),
-    ));
+      ],
+    ]);
 
     $this->assign('optionDetails', $optionDetails);
 

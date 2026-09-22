@@ -21,7 +21,7 @@ class CRM_Cdashtabs_Settings {
       ->addWhere('name', '=', $settingName)
       ->execute();
 
-    $resultValue = CRM_Utils_Array::value(0, $result, array());
+    $resultValue = CRM_Utils_Array::value(0, $result, []);
     $settingJson = CRM_Utils_Array::value('value', $resultValue, '{}');
     return json_decode($settingJson, TRUE);
   }
@@ -44,7 +44,7 @@ class CRM_Cdashtabs_Settings {
       ->execute()
       ->first();
 
-    $createParams = array();
+    $createParams = [];
 
     if ($optionValueId = $result['id'] ?? NULL) {
       $createParams['id'] = $optionValueId;

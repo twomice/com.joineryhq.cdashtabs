@@ -20,14 +20,14 @@ class CRM_Cdashtabs_Page_Section extends CRM_Core_Page {
    */
   public function &links() {
     if (!(self::$_links)) {
-      self::$_links = array(
-        CRM_Core_Action::UPDATE => array(
+      self::$_links = [
+        CRM_Core_Action::UPDATE => [
           'name' => E::ts('Edit'),
           'url' => 'civicrm/admin/cdashtabs/section',
           'qs' => 'action=update&id=%%id%%&reset=1',
           'title' => E::ts('Edit Contact Dashboard Tab'),
-        ),
-      );
+        ],
+      ];
     }
     return self::$_links;
   }
@@ -41,7 +41,7 @@ class CRM_Cdashtabs_Page_Section extends CRM_Core_Page {
       $this, FALSE, 'browse'
     );
 
-    $groupParams = array('name' => 'cdashtabs');
+    $groupParams = ['name' => 'cdashtabs'];
     $rows = CRM_Core_OptionValue::getRows($groupParams, $this->links(), 'component_id,weight');
     $gName = 'cdashtabs';
     $returnURL = CRM_Utils_System::url("civicrm/admin/cdashtabs/section",
