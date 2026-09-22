@@ -12,10 +12,10 @@ use CRM_Cdashtabs_ExtensionUtil as E;
  */
 class CRM_Cdashtabs_Form_Settings extends CRM_Core_Form {
 
-  public static $settingFilter = array('group' => 'cdashtabs');
+  public static $settingFilter = ['group' => 'cdashtabs'];
   public static $extensionName = 'com.joineryhq.cdashtabs';
-  private $_submittedValues = array();
-  private $_settings = array();
+  private $_submittedValues = [];
+  private $_settings = [];
 
   public function __construct(
     $state = NULL,
@@ -76,7 +76,7 @@ class CRM_Cdashtabs_Form_Settings extends CRM_Core_Form {
           default:
             $add = 'add' . $setting['quick_form_type'];
             if ($add == 'addElement') {
-              $this->$add($setting['html_type'], $name, E::ts($setting['title']), CRM_Utils_Array::value('html_attributes', $setting, array()));
+              $this->$add($setting['html_type'], $name, E::ts($setting['title']), CRM_Utils_Array::value('html_attributes', $setting, []));
             }
             else {
               $this->$add($name, E::ts($setting['title']));
@@ -90,23 +90,23 @@ class CRM_Cdashtabs_Form_Settings extends CRM_Core_Form {
         $rules_args = (array) $setting['X_form_rules_args'];
         foreach ($rules_args as $rule_args) {
           array_unshift($rule_args, $setting['name']);
-          call_user_func_array(array($this, 'addRule'), $rule_args);
+          call_user_func_array([$this, 'addRule'], $rule_args);
         }
       }
     }
     $this->assign("descriptions", $descriptions);
 
-    $this->addButtons(array(
-      array(
+    $this->addButtons([
+      [
         'type' => 'submit',
         'name' => E::ts('Submit'),
         'isDefault' => TRUE,
-      ),
-      array(
+      ],
+      [
         'type' => 'cancel',
         'name' => E::ts('Cancel'),
-      ),
-    ));
+      ],
+    ]);
 
     $style_path = CRM_Core_Resources::singleton()->getPath(self::$extensionName, 'css/extension.css');
     if ($style_path) {
@@ -138,7 +138,7 @@ class CRM_Cdashtabs_Form_Settings extends CRM_Core_Form {
     // auto-rendered in the loop -- such as "qfKey" and "buttons". These
     // items don't have labels. We'll identify renderable by filtering on
     // the 'label'.
-    $elementNames = array();
+    $elementNames = [];
     foreach ($this->_elements as $element) {
       $label = $element->getLabel();
       if (!empty($label)) {
@@ -159,7 +159,7 @@ class CRM_Cdashtabs_Form_Settings extends CRM_Core_Form {
   }
 
   public static function getSettings() {
-    $settings = _cdashtabs_civicrmapi('setting', 'getfields', array('filters' => self::$settingFilter));
+    $settings = _cdashtabs_civicrmapi('setting', 'getfields', ['filters' => self::$settingFilter]);
     return $settings['values'];
   }
 
@@ -185,7 +185,7 @@ class CRM_Cdashtabs_Form_Settings extends CRM_Core_Form {
    * @see CRM_Core_Form::setDefaultValues()
    */
   public function setDefaultValues() {
-    $result = _cdashtabs_civicrmapi('setting', 'get', array('return' => array_keys($this->_settings)));
+    $result = _cdashtabs_civicrmapi('setting', 'get', ['return' => array_keys($this->_settings)]);
     $domainID = CRM_Core_Config::domainID();
     $ret = $result['values'][$domainID] ?? NULL;
     return $ret;
@@ -196,7 +196,7 @@ class CRM_Cdashtabs_Form_Settings extends CRM_Core_Form {
       return call_user_func($setting['X_options_callback']);
     }
     else {
-      return CRM_Utils_Array::value('X_options', $setting, array());
+      return CRM_Utils_Array::value('X_options', $setting, []);
     }
   }
 

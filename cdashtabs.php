@@ -152,20 +152,20 @@ function cdashtabs_civicrm_enable() {
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_navigationMenu
  */
 function cdashtabs_civicrm_navigationMenu(&$menu) {
-  $pages = array(
-    'admin_page' => array(
+  $pages = [
+    'admin_page' => [
       'label'      => E::ts('Contact Dashboard Tabs'),
       'name'       => 'Contact Dashboard Tabs',
       'url'        => 'civicrm/admin/cdashtabs/section?reset=1',
-      'parent' => array('Administer', 'Customize Data and Screens'),
+      'parent' => ['Administer', 'Customize Data and Screens'],
       'permission' => 'access CiviCRM',
-    ),
-  );
+    ],
+  ];
 
   foreach ($pages as $item) {
     // Check that our item doesn't already exist.
-    $menu_item_search = array('url' => $item['url']);
-    $menu_items = array();
+    $menu_item_search = ['url' => $item['url']];
+    $menu_items = [];
     CRM_Core_BAO_Navigation::retrieve($menu_item_search, $menu_items);
     if (empty($menu_items)) {
       // Now we're sure it doesn't exist; add it to the menu.

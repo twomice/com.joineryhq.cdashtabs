@@ -2,8 +2,8 @@
 
 use CRM_Cdashtabs_ExtensionUtil as E;
 
-return array(
-  'cdashtabs_use_tabs' => array(
+return [
+  'cdashtabs_use_tabs' => [
     'group_name' => 'Cdashtabs Use Tabs',
     'group' => 'cdashtabs',
     'name' => 'cdashtabs_use_tabs',
@@ -16,8 +16,8 @@ return array(
     'quick_form_type' => 'YesNo',
     'default' => 1,
     'html_type' => 'radio',
-  ),
-  'cdashtabs_dashboard_link' => array(
+  ],
+  'cdashtabs_dashboard_link' => [
     'group_name' => 'Cdashtabs Use Tabs',
     'group' => 'cdashtabs',
     'name' => 'cdashtabs_dashboard_link',
@@ -30,5 +30,5 @@ return array(
     'quick_form_type' => 'YesNo',
     'default' => 0,
     'html_type' => 'radio',
-  ),
-);
+  ],
+];
