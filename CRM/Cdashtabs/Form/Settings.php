@@ -1,6 +1,4 @@
 <?php
-
-require_once 'CRM/Core/Form.php';
 use CRM_Cdashtabs_ExtensionUtil as E;
 
 /**
